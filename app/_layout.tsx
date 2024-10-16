@@ -3,7 +3,8 @@ import { Stack } from "expo-router";
 export default function RootLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" />
+      {/* This will serve as the landing page for featured news */}
+      <Stack.Screen name="index" options={{ title: "Featured News" }} />
     </Stack>
   );
 }
