@@ -18,23 +18,29 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch featured news articles from the server
     const fetchNews = async () => {
       try {
-        //Put ip address of the computer the server is running on. To run server, navigate to server folder and run "npm start"
-        const response = await axios.get("http://10.128.224.120:3000/getarticles");
-        setNews(response.data);
-        setLoading(false);
+        console.log("Fetching news from backend...");
+        const response = await axios.get("http://10.128.224.120:3000/getarticles", {
+          timeout: 10000, // Increase timeout
+        });
+        console.log("Fetched news:", response.data); // Log the data received
+        setNews(response.data); // Update the state with the fetched news
+        setLoading(false); // Set loading to false
       } catch (error) {
-        console.error("Error fetching news articles:", error);
-        setLoading(false);
+        if (axios.isAxiosError(error)) {
+          console.error("Error fetching news articles:", error.message);
+        } else {
+          console.error("An unexpected error occurred:", error);
+        }
       }
     };
 
     fetchNews();
-  }, []);
+  }, []); // Ensure it runs only once on mount
 
   if (loading) {
+    console.log("Loading news...");
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -43,15 +49,25 @@ export default function Index() {
     );
   }
 
+  if (news.length === 0) {
+    console.log("No news found.");
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>No articles available.</Text>
+      </View>
+    );
+  }
+
+  console.log("Rendering news...");
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Featured News</Text>
       <FlatList
         data={news}
-        keyExtractor={(item) => item.id.toString()}  // No more error on 'id'
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.newsItem}>
-            <Text style={styles.title}>{item.title.rendered}</Text>  // No more error on 'title'
+            <Text style={styles.title}>{item.title.rendered}</Text>
             <Text style={styles.excerpt}>
               {item.excerpt.rendered.replace(/(<([^>]+)>)/gi, "")}
             </Text>
