@@ -8,36 +8,50 @@ interface Article {
   title: {
     rendered: string;
   };
-  excerpt: {
-    rendered: string;
-  };
 }
 
 export default function Index() {
-  const [news, setNews] = useState<Article[]>([]);  // Specify the type of the news state
-  const [loading, setLoading] = useState(true);
+  const [news, setNews] = useState<Article[]>([]); // Store fetched articles
+  const [loading, setLoading] = useState(true); // Track loading state
+  const [error, setError] = useState<string | null>(null); // Track errors
 
   useEffect(() => {
+    let isMounted = true; // Track if the component is still mounted
+
     const fetchNews = async () => {
       try {
         console.log("Fetching news from backend...");
-        const response = await axios.get("http://10.128.224.120:3000/getarticles", {
-          timeout: 10000, // Increase timeout
+        const response = await axios.get("http://10.120.6.251:3000/getarticles", {
+          timeout: 5000,
         });
-        console.log("Fetched news:", response.data); // Log the data received
-        setNews(response.data); // Update the state with the fetched news
-        setLoading(false); // Set loading to false
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Error fetching news articles:", error.message);
+
+        if (isMounted) {
+          console.log("Fetched news:", response.data);
+          setNews(response.data); // Update the state with the fetched articles
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          console.error("Error fetching news articles:", err.message);
+          if (isMounted) setError("Failed to fetch news. Please try again.");
         } else {
-          console.error("An unexpected error occurred:", error);
+          console.error("An unexpected error occurred:", err);
+          if (isMounted) setError("An unexpected error occurred.");
+        }
+      } finally {
+        if (isMounted) {
+          console.log("Setting loading to false.");
+          setLoading(false); // Ensure loading state is cleared
         }
       }
     };
 
-    fetchNews();
-  }, []); // Ensure it runs only once on mount
+    fetchNews(); // Call the fetch function on mount
+
+    // Cleanup function to prevent state updates on unmounted component
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Run the effect only once
 
   if (loading) {
     console.log("Loading news...");
@@ -45,6 +59,15 @@ export default function Index() {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
         <Text>Loading news...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    console.log("Error occurred:", error);
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
@@ -68,9 +91,6 @@ export default function Index() {
         renderItem={({ item }) => (
           <View style={styles.newsItem}>
             <Text style={styles.title}>{item.title.rendered}</Text>
-            <Text style={styles.excerpt}>
-              {item.excerpt.rendered.replace(/(<([^>]+)>)/gi, "")}
-            </Text>
           </View>
         )}
       />
@@ -78,6 +98,7 @@ export default function Index() {
   );
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -88,6 +109,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    marginVertical: 10,
+    textAlign: "center",
   },
   header: {
     fontSize: 24,
@@ -103,9 +130,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
-  },
-  excerpt: {
-    fontSize: 14,
-    color: "#555",
   },
 });
