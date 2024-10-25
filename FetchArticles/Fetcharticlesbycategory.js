@@ -48,13 +48,14 @@ async function fetchArticlesByCategory(categoryInput, pagenumber) {
     
 
     
-console.log(articlesFormatted);
-    return articlesFormatted;  
-
+    console.log(articlesFormatted);
+    return articlesFormatted;
   } catch (error) {
     console.error('Error fetching articles:', error.message);
+    return []; // Return an empty array on error
   }
 }
 
-
 fetchArticlesByCategory('Academics',1);  
+
+export { fetchArticlesByCategory };
