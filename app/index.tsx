@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image } from 'react-native';
-import { fetchArticlesByCategory } from '.././FetchArticles/Fetcharticlesbycategory';
+import { fetchArticlesByCategory } from '../FetchArticles/Fetcharticlesbycategory';
 import styles from './index.css';
-// import Navbar from '../../components/Navbar/Navbar';
 
 interface Article {
   id: number;
   title: { rendered: string };
   date: string;
-  image_url: string;
+  image_url?: string;
+  author?: string;
+  content?: { rendered: string };
 }
 
 export default function Index() {
@@ -21,7 +22,7 @@ export default function Index() {
 
     const fetchFeaturedNews = async () => {
       try {
-        const articles = await fetchArticlesByCategory('Sports', 1);
+        const articles = await fetchArticlesByCategory('News - Top', 1);
         if (isMounted) setNews(articles || []);
       } catch (err) {
         console.error('Error fetching featured news:', err);
@@ -32,7 +33,6 @@ export default function Index() {
     };
 
     fetchFeaturedNews();
-  
 
     return () => {
       isMounted = false;
@@ -44,15 +44,22 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-  
       <FlatList
         data={news}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.article}>
-            <Image source={{ uri: item.image_url }} style={styles.image} />
-            <Text style={styles.title}>{item.title.rendered}</Text>
+            {item.image_url ? (
+              <Image source={{ uri: item.image_url }} style={styles.image} />
+            ) : null}
+            <Text style={styles.title}>{item.title?.rendered || 'Untitled'}</Text>
             <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+            {item.author && <Text style={styles.author}>By: {item.author}</Text>}
+            <Text numberOfLines={3} style={styles.preview}>
+              {item.content?.rendered
+                ? item.content.rendered.replace(/<[^>]+>/g, '')
+                : 'No content available.'}
+            </Text>
           </View>
         )}
       />

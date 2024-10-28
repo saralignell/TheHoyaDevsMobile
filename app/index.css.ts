@@ -39,10 +39,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 5,
   },
   date: {
     fontSize: 14,
     color: '#777',
+    marginBottom: 5,
+  },
+  author: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#555',
+    marginBottom: 5,
+  },
+  preview: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 
