@@ -1,10 +1,25 @@
-import { Stack } from "expo-router";
+// app/layout.tsx
+import React from 'react';
+import { Stack } from 'expo-router';
+import { View, StyleSheet } from 'react-native';
+import Header from '../components/Header';
 
 export default function RootLayout() {
   return (
-    <Stack>
-      {/* This will serve as the landing page for featured news */}
-      <Stack.Screen name="index" options={{ title: "Featured News" }} />
-    </Stack>
+    <View style={styles.container}>
+      <Header />
+      <Stack>
+        <Stack.Screen 
+          name="(tabs)" // Reference the folder containing your Tab Navigator
+          options={{ headerShown: false }}
+        />
+      </Stack>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
