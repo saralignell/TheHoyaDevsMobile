@@ -14,7 +14,7 @@ async function fetchImage(mediaId) {
 
 async function fetchArticlesByCategory(categoryInput, pagenumber) {
   let category;
-  let pagenum =pagenumber;
+  let pagenum =pagenumber ||1;
   if (typeof categoryInput === 'number') {
     category = categories.find(cat => cat.id === categoryInput);
   } else {
@@ -28,8 +28,14 @@ async function fetchArticlesByCategory(categoryInput, pagenumber) {
   
   try {
     const response = await axios.get(category.posts_link, {
-      params: { per_page: 10, page: pagenumber }  
+      params: { 
+        per_page: 10, 
+        page: pagenumber
+      }  
     });
+      if (!response.data || response.data.length === 0) {
+      return [];
+    }
     const articles = response.data;
 
     const articlesFormatted = await Promise.all(articles.map(async (article) => {
@@ -40,7 +46,9 @@ async function fetchArticlesByCategory(categoryInput, pagenumber) {
         date: article.date,
         title: article.title.rendered,
         link: article.link,
-        content: article.content.rendered.replace(/<\/?[^>]+(>|$)/g, ""),  
+        content: {
+          rendered: article.content.rendered
+        },  
         image_url: imageUrl  
       };
     }));
@@ -51,11 +59,12 @@ async function fetchArticlesByCategory(categoryInput, pagenumber) {
     console.log(articlesFormatted);
     return articlesFormatted;
   } catch (error) {
+    if(error.response && error.response === 404){ //no more pages
+      return []; //return empty 
+    }
     console.error('Error fetching articles:', error.message);
-    return []; // Return an empty array on error
+    throw error;
   }
 }
-
-fetchArticlesByCategory('Academics',1);  
 
 export { fetchArticlesByCategory };
