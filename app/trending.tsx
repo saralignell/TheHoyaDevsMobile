@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image } from 'react-native';
 import { fetchArticlesByCategory } from '../FetchArticles/Fetcharticlesbycategory';
-import styles from './index.css';
+import styles from './trending.css';
 
 interface Article {
   id: number;
@@ -17,14 +17,13 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     let isMounted = true;
 
     const fetchFeaturedNews = async () => {
       try {
         const articles = await fetchArticlesByCategory('News - Top', 1);
-        if (isMounted) setNews(articles || []);
+        if (isMounted) setNews(articles.slice(0, 10) || []); // Limit to first 10 articles
       } catch (err) {
         console.error('Error fetching featured news:', err);
         if (isMounted) setError('Failed to fetch featured news.');
@@ -48,8 +47,9 @@ export default function Index() {
       <FlatList
         data={news}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View style={styles.article}>
+            <Text style={styles.largeNumber}>{index + 1}</Text> {/* Large article number */}
             {item.image_url ? (
               <Image source={{ uri: item.image_url }} style={styles.image} />
             ) : null}
@@ -67,3 +67,4 @@ export default function Index() {
     </View>
   );
 }
+

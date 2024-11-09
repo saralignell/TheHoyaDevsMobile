@@ -3,6 +3,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Index from './../app/index';
+import Trending from './../app/trending';
+
 // import BrowseCategories from '../screens/BrowseCategories';
 // import Trending from '../screens/Trending';
 // import Crossword from '../screens/Crossword';
@@ -23,6 +25,7 @@ const TabNavigator = () => (
     })}
   >
     <Tab.Screen name="Featured News" component={Index} />
+    <Tab.Screen name="Featured News" component={Trending} />
 
   </Tab.Navigator>
 );
