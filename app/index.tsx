@@ -5,11 +5,11 @@ import styles from './index.css';
 
 interface Article {
   id: number;
-  title: { rendered: string };
+  title:  string ;
   date: string;
   image_url?: string;
   author?: string;
-  content?: { rendered: string };
+  content?: string ;
 }
 
 export default function Index() {
@@ -52,12 +52,12 @@ export default function Index() {
             {item.image_url ? (
               <Image source={{ uri: item.image_url }} style={styles.image} />
             ) : null}
-            <Text style={styles.title}>{item.title?.rendered || 'Untitled'}</Text>
+            <Text style={styles.title}>{item.title || 'Untitled'}</Text>
             <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
             {item.author && <Text style={styles.author}>By: {item.author}</Text>}
             <Text numberOfLines={3} style={styles.preview}>
-              {item.content?.rendered
-                ? item.content.rendered.replace(/<[^>]+>/g, '')
+              {item.content
+                ? item.content.replace(/<[^>]+>/g, '')
                 : 'No content available.'}
             </Text>
           </View>

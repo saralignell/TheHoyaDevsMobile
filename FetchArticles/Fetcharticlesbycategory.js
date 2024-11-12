@@ -56,6 +56,5 @@ async function fetchArticlesByCategory(categoryInput, pagenumber) {
   }
 }
 
-fetchArticlesByCategory('Academics',1);  
 
 export { fetchArticlesByCategory };
