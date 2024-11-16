@@ -6,7 +6,7 @@ import styles from './index.css';
 
 interface Article {
   id: number;
-  title: string;
+  title: { rendered: string };
   date: string;
   image_url?: string;
   author?: string;
@@ -78,7 +78,7 @@ export default function Index() {
           resizeMode="cover"
         />
       ) : null}
-      <Text style={styles.title}>{item.title || 'Untitled'}</Text>
+      <Text style={styles.title}>{item.title?.rendered || 'Untitled'}</Text>
       <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
       {item.author && <Text style={styles.author}>By: {item.author}</Text>}
       <Text numberOfLines={3} style={styles.preview}>
