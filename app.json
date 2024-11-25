@@ -26,8 +26,10 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "newArchEnabled": true,
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

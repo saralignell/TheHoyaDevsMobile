@@ -6,30 +6,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f5f5f5',
   },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: 20,
-  },
-  error: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: 'red',
-    fontSize: 18,
-  },
-  article: {
-    marginBottom: 15,
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
   image: {
     width: '100%',
     height: 200,
@@ -52,10 +28,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#555',
     marginBottom: 5,
-  },
-  preview: {
-    fontSize: 16,
-    color: '#333',
   },
   content: {
     fontSize: 16,

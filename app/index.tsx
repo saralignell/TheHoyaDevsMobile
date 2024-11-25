@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './types';
+import { useNavigation } from '@react-navigation/native';
+import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { fetchArticlesByCategory } from '../FetchArticles/Fetcharticlesbycategory';
 import styles from './index.css';
 
@@ -16,6 +19,9 @@ export default function Index() {
   const [news, setNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  type ArticleScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Article'>;
+  
+  const navigation = useNavigation<ArticleScreenNavigationProp>();
 
   useEffect(() => {
     let isMounted = true;
@@ -48,21 +54,24 @@ export default function Index() {
         data={news}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.article}>
-            {item.image_url ? (
-              <Image source={{ uri: item.image_url }} style={styles.image} />
-            ) : null}
-            <Text style={styles.title}>{item.title || 'Untitled'}</Text>
-            <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
-            {item.author && <Text style={styles.author}>By: {item.author}</Text>}
-            <Text numberOfLines={3} style={styles.preview}>
-              {item.content
-                ? item.content.replace(/<[^>]+>/g, '')
-                : 'No content available.'}
-            </Text>
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('Article', { article: item })}>
+            <View style={styles.article}>
+              {item.image_url ? (
+                <Image source={{ uri: item.image_url }} style={styles.image} />
+              ) : null}
+              <Text style={styles.title}>{item.title || 'Untitled'}</Text>
+              <Text style={styles.date}>{new Date(item.date).toDateString()}</Text>
+              {item.author && <Text style={styles.author}>By: {item.author}</Text>}
+              <Text numberOfLines={3} style={styles.preview}>
+                {item.content
+                  ? item.content.replace(/<[^>]+>/g, '')
+                  : 'No content available.'}
+              </Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>
   );
-}
+};
+

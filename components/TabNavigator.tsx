@@ -1,14 +1,49 @@
-// components/TabNavigator.tsx
 import React from 'react';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import Index from './../app/index';
-// import BrowseCategories from '../screens/BrowseCategories';
-// import Trending from '../screens/Trending';
-// import Crossword from '../screens/Crossword';
-// components/TabNavigator.tsx
+import { createStackNavigator } from '@react-navigation/stack';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Index from '../app/index'; // Replace with your actual component
+import ArticleScreen from '../app/ArticleScreen'; // Import the ArticleScreen
+import { ArticleScreenRouteProp } from '../app/ArticleScreen'; // Import the ArticleScreenRouteProp type
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const CustomHeader = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const showBackButton = route.name === 'Article';
+
+  return (
+    <View style={styles.header}>
+      {showBackButton && (
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+      )}
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <TouchableOpacity style={styles.icon}>
+        <Ionicons name="search" size={28} color="white" />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const NewsStack = () => (
+  <Stack.Navigator
+  screenOptions={{
+    header: () => <CustomHeader />, // Use the custom header component
+  }}
+>
+    <Stack.Screen name="Featured News!" component={Index} options={{ headerShown: false }} />
+    <Stack.Screen name="Article" options={{ headerShown: false }}>
+      {props => <ArticleScreen {...props as { route: ArticleScreenRouteProp; navigation: any }} />}
+    </Stack.Screen>
+  </Stack.Navigator>
+); 
 
 const TabNavigator = () => (
   <Tab.Navigator
@@ -22,8 +57,8 @@ const TabNavigator = () => (
       tabBarInactiveTintColor: 'gray',
     })}
   >
-    <Tab.Screen name="Featured News" component={Index} />
-
+    <Tab.Screen name="Featured News" component={NewsStack} />
+    {/* <Tab.Screen name="Another Screen" component={AnotherScreen} /> */}
   </Tab.Navigator>
 );
 
@@ -31,16 +66,42 @@ function getIconName(routeName: string): keyof typeof Ionicons.glyphMap {
   switch (routeName) {
     case 'Featured News':
       return 'newspaper-outline';
-    case 'Browse Categories':
-      return 'grid-outline';
-    case 'Trending':
-      return 'flame-outline';
-    case 'Crossword':
-      return 'pencil-outline';
+    // case 'Another Screen':
+    //   return 'list-outline';
     default:
-      return 'alert-circle-outline'; // Fallback icon
+      return 'help-outline';
   }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    height: 90, // Standard height for a news app header
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // Center logo
+    backgroundColor: '#094C9F', // Blue background
+    paddingHorizontal: 16, // Standard horizontal padding
+    paddingBottom: 5,
+    paddingTop: 40,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    paddingRight: 8,
+    paddingTop: 40,
+  },
+  logo: {
+    width: 120, // Standard logo width
+    height: 40, // Standard logo height
+    resizeMode: 'contain', // Ensures logo scales well
+  },
+  icon: {
+    position: 'absolute', // Position search icon independently
+    right: 16, // Align to the right
+    paddingRight: 8, // Adjust touchable area for better UX
+    paddingTop: 40,
+  },
+});
 
 export default TabNavigator;
 

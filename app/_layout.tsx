@@ -1,20 +1,16 @@
-// app/layout.tsx
 import React from 'react';
-import { Stack } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
-import Header from '../components/Header';
+import { NavigationContainer } from '@react-navigation/native';
+
+import TabNavigator from '../components/TabNavigator'; // Import your TabNavigator
 
 export default function RootLayout() {
   return (
-    <View style={styles.container}>
-      <Header />
-      <Stack>
-        <Stack.Screen 
-          name="(tabs)" // Reference the folder containing your Tab Navigator
-          options={{ headerShown: false }}
-        />
-      </Stack>
-    </View>
+
+      <View style={styles.container}>
+        <TabNavigator />
+      </View>
+ 
   );
 }
 
