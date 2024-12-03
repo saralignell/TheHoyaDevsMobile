@@ -100,7 +100,7 @@ const categories=[
     { "name": "Sports - Top", "id": 13265, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=13265" },
     { "name": "Sports Columns", "id": 13260, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=13260" },
     { "name": "Student Guide Special Issue", "id": 29813, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=29813" },
-    { "name": "Student Life", "id": 49781, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=49781" },
+    { "name": "Student-Life", "id": 49781, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=49781" },
     { "name": "Summer Highlights", "id": 15333, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=15333" },
     { "name": "Sustainability Issue", "id": 31564, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=31564" },
     { "name": "Television", "id": 28682, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=28682" },
@@ -130,5 +130,16 @@ const categories=[
     { "name": "Year in Review 2017-2018", "id": 28944, "posts_link": "https://thehoya.com/wp-json/wp/v2/posts?categories=28944" }
   ]
   
+  export const subcategories = {
+    News: ["Student-Life", "Academics", "Grad", "City News",],
+    Opinion: ["Viewpoint", "Editorial", "Column"],
+    Guide: ["Review", "Column", "Features"],
+    Sports:[],
+    Features:[],
+    Science:[],
+
+  };
   
-  export default categories;
+
+  
+  export default categories ;

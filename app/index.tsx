@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image } from 'react-native';
-import { fetchArticlesByCategory } from '../FetchArticles/Fetcharticlesbycategory';
+import { FetchArticlesByCategory } from '../FetchArticles/Fetcharticlesbycategory';
 import styles from './index.css';
 
 interface Article {
@@ -22,7 +22,7 @@ export default function Index() {
 
     const fetchFeaturedNews = async () => {
       try {
-        const articles = await fetchArticlesByCategory('News - Top', 1);
+        const articles = await FetchArticlesByCategory('News - Top', 1);
         if (isMounted) setNews(articles || []);
       } catch (err) {
         console.error('Error fetching featured news:', err);
