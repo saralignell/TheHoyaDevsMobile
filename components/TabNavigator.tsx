@@ -9,7 +9,7 @@ import Index from '../app/index'; // Replace with your actual component
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header'; // Import the Header component
 import Categories from '../app/categoriespage'; // Import the Categories component
-
+import Searchpage from './Searchpage'; // Import the Searchpage component
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -22,6 +22,7 @@ const NewsStack = () => (
   }}
 >
     <Stack.Screen name="Featured News!" component={Index} options={{ headerShown: false }} />
+    <Stack.Screen name="Search" component={Searchpage} options={{ headerShown: false }} />
     {/* <Stack.Screen name="Article" options={{ headerShown: false }}>
       {props => <ArticleScreen {...props as { route: ArticleScreenRouteProp; navigation: any }} />}
     </Stack.Screen> */}
