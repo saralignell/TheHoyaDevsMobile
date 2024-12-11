@@ -10,6 +10,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header'; 
 import Categories from '../app/categoriespage'; 
 import Searchpage from './Searchpage'; 
+import TrendingPage from '../app/trendingpage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,6 +24,7 @@ const NewsStack = () => (
 >
     <Stack.Screen name="Featured News" component={Index} options={{ headerShown: false }} />
     <Stack.Screen name="Search" component={Searchpage} options={{ headerShown: false }} />
+    <Tab.Screen name="Trending" component={TrendingPage} />
     {/* <Stack.Screen name="Article" options={{ headerShown: false }}>
       {props => <ArticleScreen {...props as { route: ArticleScreenRouteProp; navigation: any }} />}
     </Stack.Screen> */}
@@ -45,6 +47,7 @@ const TabNavigator = () => (
     >
       <Tab.Screen name="Featured News" component={NewsStack} />
       <Tab.Screen name="Categories" component={Categories} />
+      <Tab.Screen name="Trending" component={TrendingPage} />
     </Tab.Navigator>
   </View>
 );
