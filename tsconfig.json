@@ -9,10 +9,9 @@
   },
   "include": [
     "app/**/*",
-    "FetchArticles/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ],
+, "screens/HomePage/HomePage.css.ts", "screens/HomePage/HomePage.tsx", "screens/CategoriesPage/CategoriesPage.css.ts", "screens/CategoriesPage/CategoriesPage.tsx"  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
