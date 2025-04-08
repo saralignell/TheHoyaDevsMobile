@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, Pressable, StyleSheet } from "react-native";
+import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
 const Header = () => {
@@ -16,14 +16,14 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   header: {
-    height: 90, // Standard height for a news app header
+    height: Platform.OS === "ios" ? 90 : 60, // Standard height for a news app header
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center", // Center logo
     backgroundColor: "#094C9F", // Blue background
     paddingHorizontal: 16, // Standard horizontal padding
     paddingBottom: 5,
-    paddingTop: 40,
+    paddingTop: Platform.OS === "ios" ? 40 : 0, // Adjust for iOS status bar
   },
   logo: {
     width: 120, // Standard logo width

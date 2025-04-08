@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { fetchArticle } from "../../helpers/loadArticles";
 import { ScrollView } from "react-native-gesture-handler";
@@ -30,9 +31,17 @@ export default function ArticlePage({ route }) {
 
   const onShare = async () => {
     try {
-      await Share.share({
-        message: `${article.link} \nCheck out this article from The Hoya!`,
-      });
+      if (Platform.OS === "android") {
+        await Share.share({
+          message: `${article.link}`,
+          title: article.title,
+        });
+      } else if (Platform.OS === "ios") {
+        await Share.share({
+          message: "Check out this article: " + article.title,
+          url: article.link,
+        });
+      }
     } catch (error) {
       console.error("Error sharing article:", error);
     }
@@ -168,7 +177,7 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 18,
     color: "#333",
-    fontFamily: "SourceSerifPro-Regular",
+    fontFamily: "SourceSerifPro_400Regular",
     padding: 10,
   },
   loading: {
@@ -196,7 +205,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     marginBottom: 5,
-    fontFamily: "SourceSerifPro_600SemiBold",
+    fontFamily: "SourceSerifPro_400Regular",
     padding: 10,
   },
   date: {
