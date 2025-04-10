@@ -25,7 +25,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (7.0.3):
     - ExpoModulesCore
-  - ExpoModulesCore (2.1.1):
+  - ExpoModulesCore (2.2.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2035,7 +2035,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 783e68647b969b210a786047c3daa7b753dcac1f
   ExpoLinearGradient: ee9efc5acb988b911320e964fab9b4cbdeb198c4
   ExpoLinking: a8332a219379ba80f8e612d5a5de4a3da446886e
-  ExpoModulesCore: 6b1ed7e4e5ab279a1825f40ef0140db84f6aad0f
+  ExpoModulesCore: d786e1b76105f52b2a2aef218464e9d05fc1efd4
   ExpoSplashScreen: 48a5b55b370aaf48e8be0c7846c487e583067164
   ExpoSystemUI: e41835aa059bd79369f3b398b4f2b64ed4bfa5c6
   ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
