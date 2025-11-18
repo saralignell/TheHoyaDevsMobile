@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
   },
   article: {
     marginBottom: 15,
-    padding: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
     backgroundColor: "white",
   },
   image: {
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
   headline: {
     width: "100%",
     marginTop: 10,
+    paddingHorizontal: 10,
   },
   headlineImage: {
     width: Dimensions.get("window").width,
@@ -90,12 +92,17 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 15,
-    paddingHorizontal: 60,
+    gap: 10,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "space-between",
+    alignItems: "center",
     width: "100%",
+  },
+  footerContainer: {
+    flexDirection: "row",
+    gap: 20,
   },
   footerText: {
     fontFamily: "SourceSerifPro_400Regular",

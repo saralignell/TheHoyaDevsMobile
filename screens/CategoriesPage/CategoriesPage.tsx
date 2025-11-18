@@ -13,7 +13,7 @@ interface Article {
   content?: string;
 }
 
-export default function categoriespage() {
+export default function CategoriesPage() {
   const [data, setData] = useState<{ [key: string]: Article[] }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
 
@@ -68,8 +68,6 @@ export default function categoriespage() {
 
     fetchInitialData();
   }, []);
-
-  let keyIter = 0;
 
   return (
     <View style={styles.container}>

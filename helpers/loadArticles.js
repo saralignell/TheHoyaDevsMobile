@@ -4,6 +4,21 @@ import { subcategories } from "./categories.js";
 
 // Function to fetch the image URL for a given media ID
 
+const parseArticle = (content) => {
+  const paragraphs = content.split("\n");
+  for (let i = 0; i < paragraphs.length; i++) {
+    //removes inline figures or ratings from the guide
+    if (
+      paragraphs[i].startsWith("<figure") ||
+      paragraphs[i].startsWith("<p><img")
+    ) {
+      paragraphs.splice(i, 1);
+    }
+    paragraphs[i] = paragraphs[i].replace(/<[^>]*>&nbsp;|&#8217;/g, "");
+  }
+  return paragraphs;
+};
+
 // Function to fetch subcategories based on input
 function fetchSubcategories(input) {
   if (!input) {
@@ -64,10 +79,7 @@ async function FetchArticlesByCategory(categoryInput, pageNumber, limit) {
           date: article.date,
           title: article.title.rendered.replace(/&nbsp;|&#8217;/g, ""),
           link: article.link,
-          content: article.content.rendered.replace(
-            /<\/?[^>]+(>|$)|&nbsp;|&#8217;/g,
-            ""
-          ),
+          content: parseArticle(article.content.rendered).join("\n"),
           image_url: imageUrl,
         };
       })

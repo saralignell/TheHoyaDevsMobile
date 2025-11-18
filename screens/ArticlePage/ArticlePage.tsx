@@ -111,7 +111,13 @@ export default function ArticlePage({ route }) {
 
   return (
     <View style={styles.container}>
-      {loading && <ActivityIndicator size="large" color="#034da2" />}
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color="#034da2"
+          style={styles.loading}
+        />
+      )}
       {error && <Text style={styles.error}>{error}</Text>}
       {article && (
         <ScrollView
@@ -120,7 +126,9 @@ export default function ArticlePage({ route }) {
           scrollEventThrottle={16}
         >
           <Text style={styles.title}>{article?.title || "Untitled"}</Text>
-          <Image source={{ uri: article?.image_url }} style={styles.image} />
+          {article.image_url && (
+            <Image source={{ uri: article?.image_url }} style={styles.image} />
+          )}
           <View
             style={{
               flexDirection: "row",
@@ -161,6 +169,9 @@ export default function ArticlePage({ route }) {
       <View
         style={{
           height: 2,
+          position: "absolute",
+          bottom: 0,
+          left: 0,
           backgroundColor: "#034da2",
           width: `${percentRead}%`,
         }}

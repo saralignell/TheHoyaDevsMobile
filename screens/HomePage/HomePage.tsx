@@ -25,7 +25,8 @@ interface Article {
   content?: string;
 }
 
-export default function Index() {
+export default function Index({ route }) {
+  const { setIsReady } = route.params;
   const [news, setNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,19 +40,28 @@ export default function Index() {
     "Features",
     "Science",
   ];
+  let firstMount: boolean = true;
 
   useEffect(() => {
     let isMounted = true;
 
+    // initialize with featured news
     const fetchFeaturedNews = async () => {
+      firstMount = false;
       try {
         const articles = await FetchArticlesByCategory("News - Top", 1);
-        if (isMounted) setNews(articles || []);
+        setNews(articles || []);
+        console.log("Featured news loaded");
       } catch (err) {
         console.error("Error fetching featured news:", err);
         if (isMounted) setError("Failed to fetch featured news.");
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
+        // set a 2 second delay before marking the app as ready
+        setTimeout(() => {
+          console.log("App is ready");
+          setIsReady(true);
+        }, 2000);
       }
     };
 
@@ -90,14 +100,15 @@ export default function Index() {
       }
     };
 
-    fetchArticles();
+    if (!firstMount) {
+      fetchArticles();
+    }
 
     return () => {
       isMounted = false;
     };
   }, [selectedCategory]);
 
-  if (loading) return <ActivityIndicator size="large" color="#034da2" />;
   if (error) return <Text style={styles.error}>{error}</Text>;
 
   return (
@@ -107,10 +118,14 @@ export default function Index() {
         keyExtractor={(item) => item.id.toString()}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 10 }}
+        contentContainerStyle={{ padding: 0, minHeight: "100%" }}
         renderItem={({ item, index }) =>
           index === 0 ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ paddingTop: 10, paddingHorizontal: 10 }}
+            >
               {categories.map((category) => (
                 <SectionBadge
                   key={category}
@@ -124,20 +139,38 @@ export default function Index() {
             </ScrollView>
           ) : index === news.length + 1 ? (
             <View style={styles.footer}>
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL("https://thehoya.com/privacy-policy/")
-                }
-              >
-                <Text style={styles.footerText}>Privacy Policy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL("https://thehoya.com/privacy-policy/")
-                }
-              >
-                <Text style={styles.footerText}>Terms of Service</Text>
-              </TouchableOpacity>
+              <View style={styles.footerContainer}>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL("https://thehoya.com/privacy-policy/")
+                  }
+                >
+                  <Text style={styles.footerText}>Privacy Policy</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL("https://thehoya.com/privacy-policy/")
+                  }
+                >
+                  <Text style={styles.footerText}>Terms of Service</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.footerContainer}>
+                <TouchableOpacity
+                  onPress={() => Linking.openURL("https://thehoya.com/")}
+                >
+                  <Text style={styles.footerText}>© 2025 The Hoya</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL("https://www.hoyadevelopers.com/")
+                  }
+                >
+                  <Text style={styles.footerText}>
+                    Built by Hoya Developers
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : index === 1 ? (
             <TouchableOpacity

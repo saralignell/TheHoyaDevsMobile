@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.thehoya.mobile"
+      "bundleIdentifier": ".com.thehoya.mobile"
     },
     "android": {
       "adaptiveIcon": {

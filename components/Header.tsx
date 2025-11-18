@@ -1,13 +1,27 @@
 import React from "react";
 import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation
+import { Ionicons } from "@expo/vector-icons";
 
-const Header = () => {
+type HeaderProps = {
+  onArticlePage?: boolean;
+};
+
+const Header = ({ onArticlePage }: HeaderProps) => {
   const navigation = useNavigation<any>(); // Get the navigation object
 
   return (
     <View style={styles.header}>
       <Pressable onPress={() => navigation.navigate("Home")}>
+        {onArticlePage && (
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color="white"
+            style={styles.backArrow}
+            onPress={() => navigation.goBack()}
+          />
+        )}
         <Image source={require("../assets/logo.png")} style={styles.logo} />
       </Pressable>
     </View>
@@ -35,6 +49,12 @@ const styles = StyleSheet.create({
     right: 16, // Align to the right
     paddingRight: 8, // Adjust touchable area for better UX
     paddingTop: 40,
+  },
+  backArrow: {
+    position: "absolute",
+    left: -125,
+    paddingRight: 8,
+    paddingTop: 10,
   },
 });
 

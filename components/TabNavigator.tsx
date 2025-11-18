@@ -1,7 +1,11 @@
-import React from "react";
-import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
+import {
+  getFocusedRouteNameFromRoute,
+  useNavigationState,
+} from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Index from "../screens/HomePage/HomePage";
 //import ArticleScreen from '../app/ArticleScreen'; // Import the ArticleScreen
@@ -15,19 +19,31 @@ import categoriespage from "../screens/CategoriesPage/CategoriesPage";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const NewsStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
-    <Stack.Screen name="Featured News" component={Index} />
-    <Stack.Screen
-      name="Article"
-      component={ArticlePage}
-      initialParams={{ id: 0 }}
-    />
-  </Stack.Navigator>
+const NewsStack = ({ setIsReady }) => (
+  useEffect(() => {
+    console.log("Stack mounted");
+    return () => {
+      console.log("TabNavigator unmounted");
+    };
+  }, []),
+  (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen
+        name="Featured News"
+        component={Index}
+        initialParams={{ setIsReady }}
+      />
+      <Stack.Screen
+        name="Article"
+        component={ArticlePage}
+        initialParams={{ id: 0 }}
+      />
+    </Stack.Navigator>
+  )
 );
 
 const SearchStack = () => (
@@ -60,9 +76,9 @@ const CategoriesStack = () => (
   </Stack.Navigator>
 );
 
-const TabNavigator = () => (
+const TabNavigator = ({ setIsReady }) => (
   <View style={styles.container}>
-    <Header />
+    <Header onArticlePage={false} />
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
@@ -76,7 +92,9 @@ const TabNavigator = () => (
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={NewsStack} />
+      <Tab.Screen name="Home">
+        {() => <NewsStack setIsReady={setIsReady} />}
+      </Tab.Screen>
       <Tab.Screen name="Sections" component={CategoriesStack} />
       <Tab.Screen name="Crossword" component={CrosswordPage} />
       <Tab.Screen name="Search" component={SearchStack} />
