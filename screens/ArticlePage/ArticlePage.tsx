@@ -127,7 +127,12 @@ export default function ArticlePage({ route }) {
         >
           <Text style={styles.title}>{article?.title || "Untitled"}</Text>
           {article.image_url && (
-            <Image source={{ uri: article?.image_url }} style={styles.image} />
+            <View style={[styles.image, { backgroundColor: "#eee" }]}>
+              <Image
+                source={{ uri: article?.image_url }}
+                style={styles.image}
+              />
+            </View>
           )}
           <View
             style={{

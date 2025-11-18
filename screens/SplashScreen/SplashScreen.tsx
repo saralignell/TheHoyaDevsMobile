@@ -9,14 +9,25 @@ export default function AnimatedSplashScreen({
   timeoutDuration,
 }: SplashScreenProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+  const screenClear = useRef(new Animated.Value(1)).current; // Initial value for opacity: 1
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: timeoutDuration / 3,
+      duration: timeoutDuration / 4,
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      Animated.timing(screenClear, {
+        toValue: 0,
+        duration: timeoutDuration / 4,
+        useNativeDriver: true,
+      }).start();
+    }, timeoutDuration * 0.75);
+  }, [screenClear]);
 
   const getDate: () => string = () => {
     return new Date().toLocaleDateString("en-US", {
@@ -28,7 +39,7 @@ export default function AnimatedSplashScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: screenClear }]}>
       <Image
         source={require("../../assets/splash.png")}
         style={{ width: "62%", height: "62%" }}
@@ -47,7 +58,7 @@ export default function AnimatedSplashScreen({
           {getDate()}
         </Text>
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 }
 

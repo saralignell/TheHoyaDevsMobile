@@ -14,7 +14,8 @@ const parseArticle = (content) => {
     ) {
       paragraphs.splice(i, 1);
     }
-    paragraphs[i] = paragraphs[i].replace(/<[^>]*>&nbsp;|&#8217;/g, "");
+    paragraphs[i] = paragraphs[i].replaceAll(/<[^>]*>&nbsp;/g, "");
+    paragraphs[i] = paragraphs[i].replaceAll(/&#8217;/g, "’");
   }
   return paragraphs;
 };
@@ -168,7 +169,7 @@ async function fetchArticle(id) {
       date: article.date,
       title: article.title.rendered,
       link: article.link,
-      content: article.content.rendered.replace(/&nbsp;/g, ""),
+      content: parseArticle(article.content.rendered).join("\n"),
       image_url: imageUrl,
       author: article._embedded["wp:term"][2][0].name,
     };

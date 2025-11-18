@@ -23,7 +23,7 @@ export default function RootLayout() {
 
   const [isReady, setIsReady] = React.useState(false);
   const [isSplashReady, setIsSplashReady] = React.useState(false);
-  const splashTimeout = 2000; // Minimum splash screen duration in milliseconds
+  const splashTimeout = 3000; // Minimum splash screen duration in milliseconds
 
   React.useEffect(() => {
     if (isReady && loaded) {

@@ -31,6 +31,7 @@ export default function Index({ route }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("News");
+  const [isFirstMount, setIsFirstMount] = useState(true);
   const navigation = useNavigation();
   const categories = [
     "News",
@@ -47,7 +48,6 @@ export default function Index({ route }) {
 
     // initialize with featured news
     const fetchFeaturedNews = async () => {
-      firstMount = false;
       try {
         const articles = await FetchArticlesByCategory("News - Top", 1);
         setNews(articles || []);
@@ -66,6 +66,7 @@ export default function Index({ route }) {
     };
 
     fetchFeaturedNews();
+    setIsFirstMount(false);
 
     return () => {
       isMounted = false;
@@ -100,9 +101,11 @@ export default function Index({ route }) {
       }
     };
 
-    if (!firstMount) {
+    if (!isFirstMount) {
       fetchArticles();
     }
+
+    setIsFirstMount(false);
 
     return () => {
       isMounted = false;
