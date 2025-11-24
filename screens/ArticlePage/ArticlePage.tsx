@@ -7,10 +7,12 @@ import {
   StyleSheet,
   ActivityIndicator,
   Platform,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { fetchArticle } from "../../helpers/loadArticles";
-import { ScrollView } from "react-native-gesture-handler";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 interface Article {
   id: number;
@@ -18,6 +20,7 @@ interface Article {
   date: string;
   image_url?: string;
   author?: string;
+  author_id?: number;
   link?: string;
   content: string[];
 }
@@ -28,6 +31,7 @@ export default function ArticlePage({ route }) {
   const [error, setError] = useState<string | null>(null);
   const [percentRead, setPercentRead] = useState(0);
   const { id } = route.params;
+  const navigation = useNavigation();
 
   const onShare = async () => {
     try {
@@ -61,7 +65,9 @@ export default function ArticlePage({ route }) {
           image_url: fetchedData.image_url,
           link: fetchedData.link,
           author: fetchedData.author,
+          author_id: fetchedData.author_id,
         };
+        console.log("Fetched article:", article.author_id);
         if (isMounted) setArticle(article);
       } catch (err) {
         console.error("Error fetching article:", err);
@@ -146,7 +152,13 @@ export default function ArticlePage({ route }) {
                 {new Date(article.date).toDateString()}
               </Text>
               {article.author && (
-                <Text style={styles.author}>By: {article.author}</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Author", { author: article.author_id })
+                  }
+                >
+                  <Text style={styles.author}>By: {article.author}</Text>
+                </TouchableOpacity>
               )}
             </View>
             <View

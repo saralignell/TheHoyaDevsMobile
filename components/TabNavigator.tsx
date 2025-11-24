@@ -2,19 +2,15 @@ import React, { useState, useContext, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import {
-  getFocusedRouteNameFromRoute,
-  useNavigationState,
-} from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Index from "../screens/HomePage/HomePage";
-//import ArticleScreen from '../app/ArticleScreen'; // Import the ArticleScreen
-//import { ArticleScreenRouteProp } from '../app/ArticleScreen'; // Import the ArticleScreenRouteProp type
 import Header from "../components/Header";
 import Searchpage from "./Searchpage";
 import ArticlePage from "../screens/ArticlePage/ArticlePage";
 import CrosswordPage from "../screens/CrosswordPage/CrosswordPage";
 import categoriespage from "../screens/CategoriesPage/CategoriesPage";
+import AuthorPage from "../screens/AuthorPage/AuthorPage";
+import GamesPage from "../screens/GamesPage/GamesPage";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -42,6 +38,7 @@ const NewsStack = ({ setIsReady }) => (
         component={ArticlePage}
         initialParams={{ id: 0 }}
       />
+      <Stack.Screen name="Author" component={AuthorPage} />
     </Stack.Navigator>
   )
 );
@@ -58,6 +55,17 @@ const SearchStack = () => (
       component={ArticlePage}
       initialParams={{ id: 0 }}
     />
+    <Stack.Screen name="Author" component={AuthorPage} />
+  </Stack.Navigator>
+);
+
+const GamesStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <Stack.Screen name="Games" component={GamesPage} />
   </Stack.Navigator>
 );
 
@@ -73,6 +81,7 @@ const CategoriesStack = () => (
       component={ArticlePage}
       initialParams={{ id: 0 }}
     />
+    <Stack.Screen name="Author" component={AuthorPage} />
   </Stack.Navigator>
 );
 
@@ -96,6 +105,7 @@ const TabNavigator = ({ setIsReady }) => (
         {() => <NewsStack setIsReady={setIsReady} />}
       </Tab.Screen>
       <Tab.Screen name="Sections" component={CategoriesStack} />
+      <Tab.Screen name="Sports" component={GamesStack} />
       <Tab.Screen name="Crossword" component={CrosswordPage} />
       <Tab.Screen name="Search" component={SearchStack} />
     </Tab.Navigator>
@@ -112,6 +122,8 @@ function getIconName(routeName: string): keyof typeof Ionicons.glyphMap {
       return "pencil-outline";
     case "Sections":
       return "library-outline";
+    case "Sports":
+      return "basketball-outline";
     default:
       return "help-outline";
   }

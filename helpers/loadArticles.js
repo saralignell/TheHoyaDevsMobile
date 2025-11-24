@@ -2,8 +2,6 @@ import axios from "axios";
 import categories from "./categories.js";
 import { subcategories } from "./categories.js";
 
-// Function to fetch the image URL for a given media ID
-
 const parseArticle = (content) => {
   const paragraphs = content.split("\n");
   for (let i = 0; i < paragraphs.length; i++) {
@@ -135,7 +133,107 @@ async function FetchArticlesByKeyword(keyword, pageNumber = 1, limit = 10) {
   }
 }
 
-// Helper function to fetch the image URL (unchanged from your existing code)
+async function fetchAuthor(authorId) {
+  const apiUrl = "https://thehoya.com/wp-json/wp/v2/staff_profile";
+
+  try {
+    const response = await axios.get(apiUrl, {
+      params: { staff_name: authorId },
+    });
+    let author = response.data[0];
+    let profilePhotoUrl = "";
+
+    if (author && author._links) {
+      if (author._links["wp:attachment"]) {
+        console.log(
+          "Author has attachments:",
+          author._links["wp:featuredmedia"]
+        ); // Debugging line
+        mediaResponse = await fetchImage(
+          author._links["wp:featuredmedia"][0].href.split("/").pop()
+        );
+
+        profilePhotoUrl = mediaResponse;
+      } else {
+        console.log("Author has no attachments."); // Debugging line
+        profilePhotoUrl =
+          "https://thehoya.com/wp-content/uploads/2013/12/The-Hoya-First-Issue-767x1024.jpg";
+      }
+    } else {
+      profilePhotoUrl =
+        "https://thehoya.com/wp-content/uploads/2013/12/The-Hoya-First-Issue-767x1024.jpg";
+    }
+
+    // this seems to happen with some users who don't have any bio info in WP
+    if (!author) {
+      const apiUrlFallback = `https://thehoya.com/wp-json/wp/v2/staff_name/${authorId}`;
+
+      const responseFallback = await axios.get(apiUrlFallback);
+      author = responseFallback.data;
+
+      return {
+        id: authorId,
+        name: author.name || "Unknown Author",
+        title: "",
+        bio: "",
+        url: "",
+        profile_photo:
+          "https://thehoya.com/wp-content/uploads/2013/12/The-Hoya-First-Issue-767x1024.jpg",
+      };
+    }
+
+    console.log(author.content.rendered.replace(/<\/?[^>]*>/g, ""));
+    return {
+      id: author.id,
+      name: author.title.rendered,
+      title: author.excerpt.rendered,
+      bio: parseArticle(author.content.rendered)
+        .join("\n")
+        .replace(/<\/?[^>]*>/g, "")
+        .replace(/&amp;/g, "&"),
+      url: author.link,
+      profile_photo: profilePhotoUrl,
+    };
+  } catch (error) {
+    console.error("Error fetching author:", error.message);
+    return null;
+  }
+}
+
+async function fetchArticlesByAuthor(authorId, pageNumber = 1, limit = 5) {
+  const apiUrl = "https://thehoya.com/wp-json/wp/v2/posts";
+
+  try {
+    const response = await axios.get(apiUrl, {
+      params: { per_page: limit, page: pageNumber, staff_name: authorId },
+    });
+
+    const articles = response.data;
+
+    const articlesFormatted = await Promise.all(
+      articles.map(async (article) => {
+        const imageUrl = article.featured_media
+          ? await fetchImage(article.featured_media)
+          : "";
+
+        return {
+          id: article.id,
+          date: article.date,
+          title: article.title.rendered,
+          link: article.link,
+          content: parseArticle(article.content.rendered).join("\n"),
+          image_url: imageUrl,
+        };
+      })
+    );
+
+    return articlesFormatted;
+  } catch (error) {
+    console.error("Error fetching articles by author:", error.message);
+    return [];
+  }
+}
+// Helper function to fetch the image URL
 async function fetchImage(mediaId) {
   try {
     const mediaResponse = await axios.get(
@@ -164,6 +262,7 @@ async function fetchArticle(id) {
     const imageUrl = article.featured_media
       ? await fetchImage(article.featured_media)
       : "";
+    console.log("associated authors:", article.id);
     return {
       id: article.id,
       date: article.date,
@@ -172,6 +271,7 @@ async function fetchArticle(id) {
       content: parseArticle(article.content.rendered).join("\n"),
       image_url: imageUrl,
       author: article._embedded["wp:term"][2][0].name,
+      author_id: article.staff_name[0],
     };
   } catch (error) {
     console.error("Error fetching article:", error.message);
@@ -202,6 +302,26 @@ async function fetchCrossword() {
   }
 }
 
+async function fetchGames(offset = 0, limit = 10, sport = null) {
+  const apiUrl = "https://guhoyas.com/services/adaptive_components.ashx";
+  const params = {
+    type: "events",
+    sport_id: sport,
+    start: offset,
+    count: limit,
+    extra: `{"school_name":"Georgetown+University"}`,
+  };
+
+  try {
+    // accept a json response that's an array of json objects
+    const response = await axios.get(apiUrl, { params });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching games:", error.message);
+    return [];
+  }
+}
+
 // Exporting the functions
 export {
   FetchArticlesByCategory,
@@ -209,4 +329,7 @@ export {
   FetchArticlesByKeyword,
   fetchArticle,
   fetchCrossword,
+  fetchAuthor,
+  fetchArticlesByAuthor,
+  fetchGames,
 };

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ImageBackground,
   Linking,
-  ActivityIndicator,
 } from "react-native";
 import { FetchArticlesByCategory } from "../../helpers/loadArticles";
 import { useNavigation } from "@react-navigation/native";
