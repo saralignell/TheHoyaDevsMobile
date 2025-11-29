@@ -1,4 +1,4 @@
-package com.thehoya.mobile
+package com.hoyadevelopers.thehoya
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
