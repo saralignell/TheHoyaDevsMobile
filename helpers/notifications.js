@@ -1,14 +1,16 @@
 import messaging from "@react-native-firebase/messaging";
-import { PermissionsAndroid } from "react-native";
+import { PermissionsAndroid, Platform } from "react-native";
 
 async function requestNotifPermissioniOS() {
+  console.log("Requesting iOS notification permission");
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
   if (enabled) {
     console.log("Authorization status:", authStatus);
+    const fcmToken = await messaging().getToken();
+    console.log("FCM Token:", fcmToken);
   }
 }
 
@@ -37,8 +39,10 @@ async function requestNotifPermissionAndroid() {
 
 export async function requestNotificationPermission() {
   if (Platform.OS === "ios") {
+    console.log("iOS notification permission requested");
     await requestNotifPermissioniOS();
   } else if (Platform.OS === "android") {
+    console.log("Android notification permission requested");
     await requestNotifPermissionAndroid();
   }
 }

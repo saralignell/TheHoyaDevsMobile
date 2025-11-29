@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -11,9 +11,29 @@ import CrosswordPage from "../screens/CrosswordPage/CrosswordPage";
 import categoriespage from "../screens/CategoriesPage/CategoriesPage";
 import AuthorPage from "../screens/AuthorPage/AuthorPage";
 import GamesPage from "../screens/GamesPage/GamesPage";
+import * as Linking from "expo-linking";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const prefix = Linking.createURL("/");
+
+const linking = {
+  prefixes: [prefix],
+  config: {
+    screens: {
+      Home: {
+        screens: {
+          Home: "home",
+          Article: "article/:id",
+        },
+      },
+      Search: "search",
+      Sections: "categories",
+      Sports: "sports",
+      Crossword: "crossword",
+    },
+  },
+};
 
 const NewsStack = ({ setIsReady }) => (
   useEffect(() => {

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import TabNavigator from "../components/TabNavigator";
+import { requestNotificationPermission } from "../helpers/notifications";
 import {
   useFonts,
   SourceSerifPro_300Light,
@@ -10,8 +11,13 @@ import {
 } from "@expo-google-fonts/source-serif-pro";
 import * as SplashScreen from "expo-splash-screen";
 import AnimatedSplashScreen from "../screens/SplashScreen/SplashScreen";
+import * as Linking from "expo-linking";
 
 SplashScreen.preventAutoHideAsync();
+
+const linking = {
+  prefixes: [Linking.createURL("/")],
+};
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -25,7 +31,7 @@ export default function RootLayout() {
   const [isSplashReady, setIsSplashReady] = React.useState(false);
   const splashTimeout = 3000; // Minimum splash screen duration in milliseconds
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isReady && loaded) {
       console.log("Fonts and app are ready");
       // when we have articles loaded, show the animated splash
@@ -39,6 +45,19 @@ export default function RootLayout() {
       }, splashTimeout);
     }
   }, [isReady]);
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      try {
+        await requestNotificationPermission();
+        console.log("Notification permission granted");
+      } catch (err) {
+        console.log("Notification permission denied", err);
+      }
+    };
+
+    requestPermissions();
+  }, []);
 
   if (!loaded && !error && !isReady) {
     return null;
