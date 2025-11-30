@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { fetchGames } from "../../helpers/loadArticles";
 import { useNavigation } from "@react-navigation/native";
-import styles from "./GamesPage.css";
+import styles from "../../components/GamesPage.css";
 import { Ionicons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
 

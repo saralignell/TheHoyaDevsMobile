@@ -266,7 +266,7 @@ async function fetchArticle(id) {
     return {
       id: article.id,
       date: article.date,
-      title: article.title.rendered,
+      title: parseArticle(article.title.rendered).join("\n"),
       link: article.link,
       content: parseArticle(article.content.rendered).join("\n"),
       image_url: imageUrl,

@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
   ImageBackground,
   Linking,
+  ScrollView,
 } from "react-native";
-import { FetchArticlesByCategory } from "../../helpers/loadArticles";
-import { useNavigation } from "@react-navigation/native";
+import { FetchArticlesByCategory } from "../../../helpers/loadArticles";
 import styles from "./HomePage.css";
-import { ScrollView } from "react-native-gesture-handler";
-import SectionBadge from "../../components/SectionBadge";
+import SectionBadge from "../../../components/SectionBadge";
 import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 interface Article {
   id: number;
@@ -24,14 +24,16 @@ interface Article {
   content?: string;
 }
 
-export default function Index({ route }) {
-  const { setIsReady } = route.params;
+export default function Index() {
+  const { setIsReady } = useLocalSearchParams();
   const [news, setNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("News");
   const [isFirstMount, setIsFirstMount] = useState(true);
-  const navigation = useNavigation();
+
+  const router = useRouter();
+
   const categories = [
     "News",
     "Opinion",
@@ -40,7 +42,6 @@ export default function Index({ route }) {
     "Features",
     "Science",
   ];
-  let firstMount: boolean = true;
 
   useEffect(() => {
     let isMounted = true;
@@ -59,7 +60,7 @@ export default function Index({ route }) {
         // set a 2 second delay before marking the app as ready
         setTimeout(() => {
           console.log("App is ready");
-          setIsReady(true);
+          //setIsReady(true);
         }, 2000);
       }
     };
@@ -177,7 +178,10 @@ export default function Index({ route }) {
           ) : index === 1 ? (
             <TouchableOpacity
               style={styles.headline}
-              onPress={() => navigation.navigate("Article", { id: item.id })}
+              onPress={() => {
+                console.log("Navigating to article", item.id);
+                router.push(`/articles/${item.id}`);
+              }}
             >
               {item.image_url ? (
                 <ImageBackground
@@ -219,7 +223,7 @@ export default function Index({ route }) {
             index > 1 && (
               <TouchableOpacity
                 style={styles.article}
-                onPress={() => navigation.navigate("Article", { id: item.id })}
+                onPress={() => router.push(`/articles/${item.id}`)}
               >
                 {item.image_url ? (
                   <Image

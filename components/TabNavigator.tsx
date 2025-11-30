@@ -1,153 +1,65 @@
 import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import { Tabs } from "expo-router";
+import { Stack, Link } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Index from "../screens/HomePage/HomePage";
 import Header from "../components/Header";
-import Searchpage from "./Searchpage";
-import ArticlePage from "../screens/ArticlePage/ArticlePage";
-import CrosswordPage from "../screens/CrosswordPage/CrosswordPage";
-import categoriespage from "../screens/CategoriesPage/CategoriesPage";
-import AuthorPage from "../screens/AuthorPage/AuthorPage";
-import GamesPage from "../screens/GamesPage/GamesPage";
-import * as Linking from "expo-linking";
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
-const prefix = Linking.createURL("/");
-
-const linking = {
-  prefixes: [prefix],
-  config: {
-    screens: {
-      Home: {
-        screens: {
-          Home: "home",
-          Article: "article/:id",
-        },
-      },
-      Search: "search",
-      Sections: "categories",
-      Sports: "sports",
-      Crossword: "crossword",
-    },
-  },
-};
-
-const NewsStack = ({ setIsReady }) => (
-  useEffect(() => {
-    console.log("Stack mounted");
-    return () => {
-      console.log("TabNavigator unmounted");
-    };
-  }, []),
-  (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
+const TabNavigator = () => (
+  <Tabs
+    screenOptions={{
+      headerShown: false,
+      tabBarActiveTintColor: "#1E90FF",
+      tabBarInactiveTintColor: "gray",
+    }}
+  >
+    <Tabs.Screen
+      name="index"
+      options={{
+        title: "Home",
+        tabBarIcon: ({ color }) => (
+          <Ionicons size={28} name="newspaper-outline" color={color} />
+        ),
       }}
-    >
-      <Stack.Screen
-        name="Featured News"
-        component={Index}
-        initialParams={{ setIsReady }}
-      />
-      <Stack.Screen
-        name="Article"
-        component={ArticlePage}
-        initialParams={{ id: 0 }}
-      />
-      <Stack.Screen name="Author" component={AuthorPage} />
-    </Stack.Navigator>
-  )
-);
-
-const SearchStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
-    <Stack.Screen name="Search" component={Searchpage} />
-    <Stack.Screen
-      name="Article"
-      component={ArticlePage}
-      initialParams={{ id: 0 }}
     />
-    <Stack.Screen name="Author" component={AuthorPage} />
-  </Stack.Navigator>
-);
-
-const GamesStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
-    <Stack.Screen name="Games" component={GamesPage} />
-  </Stack.Navigator>
-);
-
-const CategoriesStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
-    <Stack.Screen name="Categories" component={categoriespage} />
-    <Stack.Screen
-      name="Article"
-      component={ArticlePage}
-      initialParams={{ id: 0 }}
+    <Tabs.Screen
+      name="categories"
+      options={{
+        title: "Categories",
+        tabBarIcon: ({ color }) => (
+          <Ionicons size={28} name="library-outline" color={color} />
+        ),
+      }}
     />
-    <Stack.Screen name="Author" component={AuthorPage} />
-  </Stack.Navigator>
+    <Tabs.Screen
+      name="sports"
+      options={{
+        title: "Sports",
+        tabBarIcon: ({ color }) => (
+          <Ionicons size={28} name="basketball-outline" color={color} />
+        ),
+      }}
+    />
+    <Tabs.Screen
+      name="crossword"
+      options={{
+        title: "Crossword",
+        tabBarIcon: ({ color }) => (
+          <Ionicons size={28} name="pencil-outline" color={color} />
+        ),
+      }}
+    />
+    <Tabs.Screen
+      name="search"
+      options={{
+        title: "Search",
+        tabBarIcon: ({ color }) => (
+          <Ionicons size={28} name="search-outline" color={color} />
+        ),
+      }}
+    />
+  </Tabs>
 );
-
-const TabNavigator = ({ setIsReady }) => (
-  <View style={styles.container}>
-    <Header onArticlePage={false} />
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          const iconName: keyof typeof Ionicons.glyphMap = getIconName(
-            route.name
-          );
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: "#1E90FF",
-        tabBarInactiveTintColor: "gray",
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home">
-        {() => <NewsStack setIsReady={setIsReady} />}
-      </Tab.Screen>
-      <Tab.Screen name="Sections" component={CategoriesStack} />
-      <Tab.Screen name="Sports" component={GamesStack} />
-      <Tab.Screen name="Crossword" component={CrosswordPage} />
-      <Tab.Screen name="Search" component={SearchStack} />
-    </Tab.Navigator>
-  </View>
-);
-
-function getIconName(routeName: string): keyof typeof Ionicons.glyphMap {
-  switch (routeName) {
-    case "Home":
-      return "newspaper-outline";
-    case "Search":
-      return "search-outline";
-    case "Crossword":
-      return "pencil-outline";
-    case "Sections":
-      return "library-outline";
-    case "Sports":
-      return "basketball-outline";
-    default:
-      return "help-outline";
-  }
-}
 
 const styles = StyleSheet.create({
   container: {

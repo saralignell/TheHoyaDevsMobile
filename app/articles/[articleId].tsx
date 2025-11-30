@@ -13,6 +13,7 @@ import {
 import { fetchArticle } from "../../helpers/loadArticles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 
 interface Article {
   id: number;
@@ -25,13 +26,14 @@ interface Article {
   content: string[];
 }
 
-export default function ArticlePage({ route }) {
+export default function ArticlePage() {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [percentRead, setPercentRead] = useState(0);
-  const { id } = route.params;
-  const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const id = params.articleId;
+  const router = useRouter();
 
   const onShare = async () => {
     try {
@@ -82,7 +84,7 @@ export default function ArticlePage({ route }) {
     return () => {
       isMounted = false;
     };
-  }, [route.params.id]);
+  }, [params.articleId]);
 
   const parseArticle = (content: string) => {
     const paragraphs = content.split("\n");
@@ -153,9 +155,7 @@ export default function ArticlePage({ route }) {
               </Text>
               {article.author && (
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Author", { author: article.author_id })
-                  }
+                  onPress={() => router.push(`/authors/${article.author_id}`)}
                 >
                   <Text style={styles.author}>By: {article.author}</Text>
                 </TouchableOpacity>

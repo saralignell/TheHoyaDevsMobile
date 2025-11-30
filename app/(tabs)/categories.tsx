@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { FetchArticlesByCategory } from "../../helpers/loadArticles";
-import styles from "./CategoriesPage.css";
-import { useNavigation } from "@react-navigation/native";
+import styles from "../../components/CategoriesPage.css";
+import { useRouter } from "expo-router";
 
 interface Article {
   id: number;
@@ -16,6 +16,7 @@ interface Article {
 export default function CategoriesPage() {
   const [data, setData] = useState<{ [key: string]: Article[] }>({});
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const router = useRouter();
 
   const subcategories = [
     "Student-Life",
@@ -28,7 +29,6 @@ export default function CategoriesPage() {
     "Review",
     "Features",
   ];
-  const navigation = useNavigation();
 
   const fetchData = async (
     subcategory: string,
@@ -57,16 +57,37 @@ export default function CategoriesPage() {
       if (subcategories.length === 0) return;
 
       const initialPage = 1;
-      const initialLimit = 10;
+      const initialLimit = 5;
 
-      const articlesPromises = subcategories.map((subcategory) =>
-        fetchData(subcategory, initialPage, initialLimit)
-      );
+      // start by loading just the first 3 subcategories
+      const articlesPromises = subcategories
+        .slice(0, 3)
+        .map((subcategory) =>
+          fetchData(subcategory, initialPage, initialLimit)
+        );
 
       await Promise.all(articlesPromises);
     };
 
-    fetchInitialData();
+    const fetchMoreData = async () => {
+      const initialPage = 1;
+      const initialLimit = 5;
+
+      // after a delay, load the remaining subcategories
+      setTimeout(async () => {
+        const articlesPromises = subcategories
+          .slice(3)
+          .map((subcategory) =>
+            fetchData(subcategory, initialPage, initialLimit)
+          );
+
+        await Promise.all(articlesPromises);
+      }, 2000); // 2 second delay
+    };
+
+    fetchInitialData().then(() => {
+      fetchMoreData();
+    });
   }, []);
 
   return (
@@ -85,11 +106,7 @@ export default function CategoriesPage() {
                 <TouchableOpacity
                   key={article.id + Math.random()}
                   style={styles.articleCard}
-                  onPress={() =>
-                    navigation.navigate("Article", {
-                      id: article.id,
-                    })
-                  }
+                  onPress={() => router.push(`/articles/${article.id}`)}
                 >
                   {article.image_url && (
                     <Image

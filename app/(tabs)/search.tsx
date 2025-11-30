@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Icon library
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 // Define the article type
 interface Article {
@@ -27,7 +27,7 @@ const Searchpage = () => {
   const [searchText, setSearchText] = useState("");
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
+  const router = useRouter();
 
   // Fetch articles by keyword
   const fetchArticles = async () => {
@@ -93,7 +93,7 @@ const Searchpage = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.article}
-                onPress={() => navigation.navigate("Article", { id: item.id })}
+                onPress={() => router.push(`/articles/${item.id}`)}
               >
                 <View style={styles.articleTextContainer}>
                   <Text style={styles.articleTitle} numberOfLines={3}>

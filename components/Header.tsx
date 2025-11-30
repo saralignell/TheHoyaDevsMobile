@@ -1,25 +1,25 @@
 import React from "react";
 import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 type HeaderProps = {
   onArticlePage?: boolean;
 };
 
 const Header = ({ onArticlePage }: HeaderProps) => {
-  const navigation = useNavigation<any>(); // Get the navigation object
+  const router = useRouter();
 
   return (
     <View style={styles.header}>
-      <Pressable onPress={() => navigation.navigate("Home")}>
+      <Pressable onPress={() => router.navigate("/")}>
         {onArticlePage && (
           <Ionicons
             name="arrow-back"
             size={24}
             color="white"
             style={styles.backArrow}
-            onPress={() => navigation.goBack()}
+            onPress={() => router.back()}
           />
         )}
         <Image source={require("../assets/logo.png")} style={styles.logo} />

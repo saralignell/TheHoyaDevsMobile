@@ -10,11 +10,14 @@
   "include": [
     "app/**/*",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "screens/HomePage/HomePage.css.ts", "screens/HomePage/HomePage.tsx", "screens/CategoriesPage/CategoriesPage.css.ts", "screens/CategoriesPage/CategoriesPage.tsx"  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+    "expo-env.d.ts",
+    "screens/HomePage/HomePage.css.ts",
+    "screens/HomePage/HomePage.tsx",
+    "screens/CategoriesPage/CategoriesPage.css.ts",
+    "screens/CategoriesPage/CategoriesPage.tsx",
+    "components/SplashScreen.tsx",
+    "components/AuthorPage.css.ts"
   ],
+  "exclude": ["node_modules", "**/*.spec.ts"],
   "extends": "expo/tsconfig.base"
 }

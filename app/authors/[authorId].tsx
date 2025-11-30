@@ -9,9 +9,8 @@ import {
   ScrollView,
 } from "react-native";
 import { fetchArticlesByAuthor, fetchAuthor } from "../../helpers/loadArticles";
-import { useNavigation } from "@react-navigation/native";
 import styles from "./AuthorPage.css";
-import { LinearGradient } from "expo-linear-gradient";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 interface Author {
   id: number;
@@ -22,13 +21,14 @@ interface Author {
   profile_photo?: string;
 }
 
-export default function AuthorPage({ route }) {
-  const { author } = route.params;
+export default function AuthorPage() {
   const [authorData, setAuthorData] = useState<Author | null>(null);
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigation = useNavigation();
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const author = params.authorId;
 
   useEffect(() => {
     console.log("Fetching data for author ID:", author);
@@ -88,9 +88,7 @@ export default function AuthorPage({ route }) {
               <TouchableOpacity
                 key={article.id}
                 style={styles.article}
-                onPress={() =>
-                  navigation.navigate("Article", { id: article.id })
-                }
+                onPress={() => router.push(`/articles/${article.id}`)}
               >
                 {article.image_url ? (
                   <Image
