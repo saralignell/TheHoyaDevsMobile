@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Linking,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import { FetchArticlesByCategory } from "../../../helpers/loadArticles";
 import styles from "./HomePage.css";
@@ -43,63 +44,61 @@ export default function Index() {
     "Science",
   ];
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchFeaturedNews = async () => {
+    try {
+      const articles = await FetchArticlesByCategory("News - Top", 1);
+      setNews(articles || []);
+      console.log("Featured news loaded");
+    } catch (err) {
+      console.error("Error fetching featured news:", err);
+      if (isFirstMount) setError("Failed to fetch featured news.");
+    } finally {
+      setLoading(false);
+      // set a 2 second delay before marking the app as ready
+      setTimeout(() => {
+        console.log("App is ready");
+        //setIsReady(true);
+      }, 2000);
+    }
+  };
 
-    // initialize with featured news
-    const fetchFeaturedNews = async () => {
-      try {
-        const articles = await FetchArticlesByCategory("News - Top", 1);
-        setNews(articles || []);
-        console.log("Featured news loaded");
-      } catch (err) {
-        console.error("Error fetching featured news:", err);
-        if (isMounted) setError("Failed to fetch featured news.");
-      } finally {
-        setLoading(false);
-        // set a 2 second delay before marking the app as ready
-        setTimeout(() => {
-          console.log("App is ready");
-          //setIsReady(true);
-        }, 2000);
+  const fetchArticles = async () => {
+    try {
+      let category = selectedCategory;
+      switch (selectedCategory) {
+        case "News":
+          category = "News - Top";
+          break;
+        case "Guide":
+          const articles = await FetchArticlesByCategory(13266, 1);
+          setNews(articles || []);
+          return;
+        default:
+          break;
       }
-    };
 
+      const articles = await FetchArticlesByCategory(selectedCategory, 1);
+      setNews(articles || []);
+    } catch (err) {
+      console.error("Error fetching articles:", err);
+      setError("Failed to fetch articles.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = () => {
+    setLoading(true);
+    fetchArticles();
+  };
+
+  useEffect(() => {
     fetchFeaturedNews();
     setIsFirstMount(false);
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   useEffect(() => {
     let isMounted = true;
-
-    const fetchArticles = async () => {
-      try {
-        let category = selectedCategory;
-        switch (selectedCategory) {
-          case "News":
-            category = "News - Top";
-            break;
-          case "Guide":
-            const articles = await FetchArticlesByCategory(13266, 1);
-            if (isMounted) setNews(articles || []);
-            return;
-          default:
-            break;
-        }
-
-        const articles = await FetchArticlesByCategory(selectedCategory, 1);
-        if (isMounted) setNews(articles || []);
-      } catch (err) {
-        console.error("Error fetching articles:", err);
-        if (isMounted) setError("Failed to fetch articles.");
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
 
     if (!isFirstMount) {
       fetchArticles();
@@ -118,6 +117,9 @@ export default function Index() {
     <View style={styles.container}>
       <FlatList
         data={[{ id: 0 }, ...news, { id: 1 }]}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+        }
         keyExtractor={(item) => item.id.toString()}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -136,6 +138,7 @@ export default function Index() {
                   selected={selectedCategory === category}
                   onPress={(category) => {
                     setSelectedCategory(category);
+                    setLoading(true);
                   }}
                 />
               ))}

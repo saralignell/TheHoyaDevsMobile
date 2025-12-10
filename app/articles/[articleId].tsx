@@ -9,11 +9,14 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  ImageBackground,
+  Dimensions,
+  Appearance,
 } from "react-native";
 import { fetchArticle } from "../../helpers/loadArticles";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { HeaderContext } from "../_layout";
 
 interface Article {
   id: number;
@@ -24,7 +27,11 @@ interface Article {
   author_id?: number;
   link?: string;
   content: string[];
+  isFeature?: boolean;
 }
+
+let ScreenHeight = Dimensions.get("window").height;
+let colorScheme = Appearance.getColorScheme();
 
 export default function ArticlePage() {
   const [article, setArticle] = useState<Article | null>(null);
@@ -34,8 +41,17 @@ export default function ArticlePage() {
   const params = useLocalSearchParams();
   const id = params.articleId;
   const router = useRouter();
+  const { setOnArticlePage } = React.useContext(HeaderContext);
+
+  useEffect(() => {
+    setOnArticlePage(true);
+    return () => {
+      setOnArticlePage(false);
+    };
+  }, []);
 
   const onShare = async () => {
+    if (!article) return;
     try {
       if (Platform.OS === "android") {
         await Share.share({
@@ -68,6 +84,7 @@ export default function ArticlePage() {
           link: fetchedData.link,
           author: fetchedData.author,
           author_id: fetchedData.author_id,
+          isFeature: fetchedData.isFeature,
         };
         console.log("Fetched article:", article.author_id);
         if (isMounted) setArticle(article);
@@ -127,11 +144,13 @@ export default function ArticlePage() {
         />
       )}
       {error && <Text style={styles.error}>{error}</Text>}
-      {article && (
+      {article && !article.isFeature && (
         <ScrollView
           contentContainerStyle={{ paddingVertical: 10 }}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          overScrollMode="never"
+          bounces={false}
         >
           <Text style={styles.title}>{article?.title || "Untitled"}</Text>
           {article.image_url && (
@@ -183,6 +202,44 @@ export default function ArticlePage() {
           ))}
         </ScrollView>
       )}
+      {article && article.isFeature && (
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 10 }}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          bounces={false}
+          overScrollMode="never"
+        >
+          <ImageBackground
+            style={styles.featureHeader}
+            source={{ uri: article.image_url }}
+          >
+            <View style={styles.featureShadow} />
+            <Text style={styles.featureTitle}>
+              {article?.title || "Untitled"}
+            </Text>
+            <View style={styles.headerHR} />
+            <TouchableOpacity
+              onPress={() => router.push(`/authors/${article.author_id}`)}
+            >
+              <Text style={styles.featureSubtitle}>{article.author}</Text>
+            </TouchableOpacity>
+            <View style={styles.featureShare}>
+              <Ionicons
+                name="share-outline"
+                size={25}
+                color="#fff"
+                onPress={onShare}
+              />
+            </View>
+          </ImageBackground>
+          {article.content.map((paragraph, index) => (
+            <Text key={index} style={styles.content}>
+              {paragraph}
+            </Text>
+          ))}
+        </ScrollView>
+      )}
       <View
         style={{
           height: 2,
@@ -200,11 +257,11 @@ export default function ArticlePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000" : "#fff",
   },
   content: {
     fontSize: 18,
-    color: "#333",
+    color: colorScheme === "dark" ? "#fff" : "#333",
     fontFamily: "SourceSerifPro_400Regular",
     padding: 10,
   },
@@ -231,14 +288,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "black",
+    color: colorScheme === "dark" ? "#fff" : "#000",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_400Regular",
     padding: 10,
   },
   date: {
     fontSize: 14,
-    color: "#777",
+    color: colorScheme === "dark" ? "#ccc" : "#555",
     padding: 10,
     paddingBottom: 5,
     fontFamily: "SourceSerifPro_400Regular",
@@ -246,9 +303,56 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 14,
     fontStyle: "italic",
-    color: "#555",
+    color: colorScheme === "dark" ? "#ccc" : "#555",
     padding: 10,
     paddingTop: 0,
     fontFamily: "SourceSerifPro_400Regular_Italic",
+  },
+  featureHeader: {
+    width: "100%",
+    height: ScreenHeight - 80,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  featureShadow: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    position: "absolute",
+  },
+  featureTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+    paddingHorizontal: 20,
+    fontFamily: "SourceSerifPro_400Regular",
+  },
+  featureSubtitle: {
+    fontSize: 18,
+    color: "white",
+    textAlign: "center",
+    marginTop: 10,
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+    fontFamily: "SourceSerifPro_400Regular_Italic",
+    paddingHorizontal: 20,
+  },
+  featureShare: {
+    position: "absolute",
+    bottom: 40,
+    right: 40,
+  },
+  headerHR: {
+    width: 60,
+    height: 2,
+    backgroundColor: "white",
+    marginTop: 15,
+    marginBottom: 15,
   },
 });

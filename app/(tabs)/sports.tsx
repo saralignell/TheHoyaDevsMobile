@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   FlatList,
   Linking,
+  RefreshControl,
 } from "react-native";
 import { fetchGames } from "../../helpers/loadArticles";
 import { useNavigation } from "@react-navigation/native";
@@ -21,19 +22,24 @@ export default function GamesPage() {
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchGamesData = async () => {
-      try {
-        const gamesData = await fetchGames();
-        setGames(gamesData);
-      } catch (err) {
-        console.error("Error fetching games:", err);
-        setError("Failed to fetch games.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchGamesData = async () => {
+    try {
+      const gamesData = await fetchGames();
+      setGames(gamesData);
+    } catch (err) {
+      console.error("Error fetching games:", err);
+      setError("Failed to fetch games.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const onRefresh = () => {
+    setLoading(true);
+    fetchGamesData();
+  };
+
+  useEffect(() => {
     fetchGamesData();
   }, []);
 
@@ -176,6 +182,9 @@ export default function GamesPage() {
       <FlatList
         data={games}
         renderItem={renderGameItem}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+        }
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.gamesList}
       />

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { View, StyleSheet } from "react-native";
 import { requestNotificationPermission } from "../helpers/notifications";
 import {
@@ -24,9 +24,21 @@ const linking = {
 function handleNotificationOpen(remoteMessage: any): string | undefined {
   if (remoteMessage && remoteMessage.data && remoteMessage.data.articleId) {
     const articleId = remoteMessage.data.articleId;
-    return Linking.createURL(`/articles/${articleId}`);
+    return `/articles/${articleId}`;
   }
 }
+
+export const HeaderContext = React.createContext<{
+  onArticlePage: boolean;
+  setOnArticlePage: (value: boolean) => void;
+  onFeaturedPage: boolean;
+  setOnFeaturedPage: (value: boolean) => void;
+}>({
+  onArticlePage: false,
+  setOnArticlePage: () => {},
+  onFeaturedPage: false,
+  setOnFeaturedPage: () => {},
+});
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -39,6 +51,8 @@ export default function RootLayout() {
   const [isReady, setIsReady] = React.useState(false);
   const [isSplashReady, setIsSplashReady] = React.useState(false);
   const splashTimeout = 3000; // Minimum splash screen duration in milliseconds
+  const [onArticlePage, setOnArticlePage] = React.useState(false);
+  const [onFeaturedPage, setOnFeaturedPage] = React.useState(false);
 
   useEffect(() => {
     messaging()
@@ -51,7 +65,6 @@ export default function RootLayout() {
           );
           const url = handleNotificationOpen(remoteMessage);
           if (url) {
-            Linking.openURL(url);
           }
         }
       });
@@ -74,12 +87,10 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       console.log("Fonts and app are ready");
-      setTimeout(() => {
-        setIsSplashReady(true);
-      }, 1000);
+      setIsSplashReady(true);
       setTimeout(() => {
         SplashScreen.hideAsync();
-      }, 100);
+      }, 200);
       setTimeout(() => {
         //after the timeout, hide the splash screen and show the app
         setIsSplashReady(false);
@@ -105,20 +116,34 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={styles.container}>
-      <Header onArticlePage={false} />
-      {isSplashReady && <AnimatedSplashScreen timeoutDuration={3000} />}
-      <Stack
-        screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="articles" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="authors/[authorId]"
-          options={{ headerShown: false }}
-        />
-      </Stack>
-    </View>
+    <HeaderContext.Provider
+      value={{
+        onArticlePage,
+        setOnArticlePage,
+        onFeaturedPage,
+        setOnFeaturedPage,
+      }}
+    >
+      <View style={styles.container}>
+        <Header />
+
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            fullScreenGestureEnabled: true,
+            headerTransparent: true,
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="articles" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="authors/[authorId]"
+            options={{ headerShown: false }}
+          />
+        </Stack>
+        {isSplashReady && <AnimatedSplashScreen timeoutDuration={3000} />}
+      </View>
+    </HeaderContext.Provider>
   );
 }
 

@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     paddingBottom: 20,
+    minHeight: Dimensions.get("window").height,
   },
   header: {
     fontSize: 24,

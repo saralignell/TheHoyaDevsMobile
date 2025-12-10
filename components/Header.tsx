@@ -2,6 +2,7 @@ import React from "react";
 import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { HeaderContext } from "../app/_layout";
 
 type HeaderProps = {
   onArticlePage?: boolean;
@@ -9,11 +10,17 @@ type HeaderProps = {
 
 const Header = ({ onArticlePage }: HeaderProps) => {
   const router = useRouter();
+  const {
+    onArticlePage: contextOnArticlePage,
+    onFeaturedPage: contextOnFeaturedPage,
+  } = React.useContext(HeaderContext);
 
   return (
-    <View style={styles.header}>
+    <View
+      style={contextOnFeaturedPage ? styles.featurePageHeader : styles.header}
+    >
       <Pressable onPress={() => router.navigate("/")}>
-        {onArticlePage && (
+        {contextOnArticlePage && (
           <Ionicons
             name="arrow-back"
             size={24}
@@ -34,7 +41,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center", // Center logo
-    backgroundColor: "#094C9F", // Blue background
+    backgroundColor: "rgba(9, 76, 159, 1)", // Blue background
     paddingHorizontal: 16, // Standard horizontal padding
     paddingBottom: 5,
     paddingTop: Platform.OS === "ios" ? 40 : 0, // Adjust for iOS status bar
@@ -55,6 +62,16 @@ const styles = StyleSheet.create({
     left: -125,
     paddingRight: 8,
     paddingTop: 10,
+  },
+  featurePageHeader: {
+    height: Platform.OS === "ios" ? 90 : 60, // Standard height for a news app header
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Center logo
+    backgroundColor: "rgba(9, 76, 159, 1)",
+    paddingHorizontal: 16, // Standard horizontal padding
+    paddingBottom: 5,
+    paddingTop: Platform.OS === "ios" ? 40 : 0, // Adjust for iOS status bar
   },
 });
 

@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   teamName: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "center",
     fontFamily: "SourceSerifPro_600SemiBold",
   },

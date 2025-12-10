@@ -145,17 +145,12 @@ async function fetchAuthor(authorId) {
 
     if (author && author._links) {
       if (author._links["wp:attachment"]) {
-        console.log(
-          "Author has attachments:",
-          author._links["wp:featuredmedia"]
-        ); // Debugging line
         mediaResponse = await fetchImage(
           author._links["wp:featuredmedia"][0].href.split("/").pop()
         );
 
         profilePhotoUrl = mediaResponse;
       } else {
-        console.log("Author has no attachments."); // Debugging line
         profilePhotoUrl =
           "https://thehoya.com/wp-content/uploads/2013/12/The-Hoya-First-Issue-767x1024.jpg";
       }
@@ -182,7 +177,6 @@ async function fetchAuthor(authorId) {
       };
     }
 
-    console.log(author.content.rendered.replace(/<\/?[^>]*>/g, ""));
     return {
       id: author.id,
       name: author.title.rendered,
@@ -198,6 +192,24 @@ async function fetchAuthor(authorId) {
     console.error("Error fetching author:", error.message);
     return null;
   }
+}
+
+// helper function for things like features which have multiple authors
+async function parseAuthorNames(authorTags) {
+  let res = "";
+  // converts from staff_name-opal-kendall to Opal Kendall format
+  for (let tag of authorTags) {
+    const namePart = tag.replace("staff_name-", "").replace(/-/g, " ");
+    const nameFormatted = namePart
+      .split(" ")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+    if (res.length > 0) {
+      res += ", ";
+    }
+    res += nameFormatted;
+  }
+  return res;
 }
 
 async function fetchArticlesByAuthor(authorId, pageNumber = 1, limit = 5) {
@@ -262,7 +274,13 @@ async function fetchArticle(id) {
     const imageUrl = article.featured_media
       ? await fetchImage(article.featured_media)
       : "";
-    console.log("associated authors:", article.id);
+    const isFeature = article.class_list.includes("category-features");
+    console.log("article id", article.id);
+
+    // handle Features with multiple authors
+    const authorNames = await parseAuthorNames(
+      article.class_list.filter((tag) => tag.startsWith("staff_name-"))
+    );
     return {
       id: article.id,
       date: article.date,
@@ -270,8 +288,9 @@ async function fetchArticle(id) {
       link: article.link,
       content: parseArticle(article.content.rendered).join("\n"),
       image_url: imageUrl,
-      author: article._embedded["wp:term"][2][0].name,
+      author: authorNames,
       author_id: article.staff_name[0],
+      isFeature: isFeature,
     };
   } catch (error) {
     console.error("Error fetching article:", error.message);
