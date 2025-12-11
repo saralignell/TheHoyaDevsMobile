@@ -23,6 +23,7 @@ interface Article {
   image_url?: string;
   author?: string;
   content?: string;
+  reading_time?: number;
 }
 
 export default function Index() {
@@ -45,6 +46,18 @@ export default function Index() {
   ];
 
   const fetchFeaturedNews = async () => {
+    let category = selectedCategory;
+    switch (selectedCategory) {
+      case "News":
+        category = "News - Top";
+        break;
+      case "Guide":
+        const articles = await FetchArticlesByCategory(13266, 1);
+        setNews(articles || []);
+        return;
+      default:
+        break;
+    }
     try {
       const articles = await FetchArticlesByCategory("News - Top", 1);
       setNews(articles || []);
@@ -77,7 +90,7 @@ export default function Index() {
           break;
       }
 
-      const articles = await FetchArticlesByCategory(selectedCategory, 1);
+      const articles = await FetchArticlesByCategory(category, 1);
       setNews(articles || []);
     } catch (err) {
       console.error("Error fetching articles:", err);
@@ -207,7 +220,12 @@ export default function Index() {
                 <Text style={[styles.title]}>{item.title || "Untitled"}</Text>
               )}
               <Text style={[styles.date, styles.headlineDate]}>
-                {new Date(item.date).toDateString()}
+                {new Date(item.date).toLocaleDateString(undefined, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })}{" "}
+                • {item.reading_time} min read
               </Text>
               {item.author && (
                 <Text style={styles.author}>By: {item.author}</Text>
@@ -236,7 +254,8 @@ export default function Index() {
                 ) : null}
                 <Text style={styles.title}>{item.title || "Untitled"}</Text>
                 <Text style={styles.date}>
-                  {new Date(item.date).toDateString()}
+                  {new Date(item.date).toDateString()} • {item.reading_time} min
+                  read
                 </Text>
                 {item.author && (
                   <Text style={styles.author}>By: {item.author}</Text>

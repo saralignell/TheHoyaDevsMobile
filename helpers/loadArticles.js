@@ -18,6 +18,14 @@ const parseArticle = (content) => {
   return paragraphs;
 };
 
+const calculateReadingTime = (content) => {
+  const wordsPerMinute = 300; // avg reading speed for a college student
+  const text = content.replace(/<[^>]*>/g, ""); // remove HTML tags
+  const wordCount = text.trim().split(/\s+/).length;
+  const readingTimeMinutes = Math.ceil(wordCount / wordsPerMinute);
+  return readingTimeMinutes;
+};
+
 // Function to fetch subcategories based on input
 function fetchSubcategories(input) {
   if (!input) {
@@ -80,6 +88,7 @@ async function FetchArticlesByCategory(categoryInput, pageNumber, limit) {
           link: article.link,
           content: parseArticle(article.content.rendered).join("\n"),
           image_url: imageUrl,
+          reading_time: calculateReadingTime(article.content.rendered),
         };
       })
     );
@@ -275,12 +284,12 @@ async function fetchArticle(id) {
       ? await fetchImage(article.featured_media)
       : "";
     const isFeature = article.class_list.includes("category-features");
-    console.log("article id", article.id);
 
     // handle Features with multiple authors
     const authorNames = await parseAuthorNames(
       article.class_list.filter((tag) => tag.startsWith("staff_name-"))
     );
+    const reading_time = calculateReadingTime(article.content.rendered);
     return {
       id: article.id,
       date: article.date,
@@ -291,6 +300,7 @@ async function fetchArticle(id) {
       author: authorNames,
       author_id: article.staff_name[0],
       isFeature: isFeature,
+      reading_time: reading_time,
     };
   } catch (error) {
     console.error("Error fetching article:", error.message);

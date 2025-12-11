@@ -168,9 +168,14 @@ export default function ArticlePage() {
               width: "110%",
             }}
           >
-            <View style={{ flex: 2, width: "80%" }}>
+            <View style={{ flex: 2, width: "80%", paddingHorizontal: 5 }}>
               <Text style={styles.date}>
-                {new Date(article.date).toDateString()}
+                {new Date(article.date).toLocaleDateString(undefined, {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </Text>
               {article.author && (
                 <TouchableOpacity
@@ -292,7 +297,8 @@ const styles = StyleSheet.create({
     color: colorScheme === "dark" ? "#fff" : "#000",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_400Regular",
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   date: {
     fontSize: 14,
