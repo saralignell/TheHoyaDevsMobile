@@ -263,7 +263,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colorScheme === "dark" ? "#fff" : "#333",
     fontFamily: "SourceSerifPro_400Regular",
-    padding: 10,
+    padding: 15,
+    lineHeight: 26,
   },
   loading: {
     flex: 1,
