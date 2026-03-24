@@ -6,14 +6,19 @@ const parseArticle = (content) => {
   const paragraphs = content.split("\n");
   for (let i = 0; i < paragraphs.length; i++) {
     //removes inline figures or ratings from the guide
-    if (
-      paragraphs[i].startsWith("<figure") ||
-      paragraphs[i].startsWith("<p><img")
-    ) {
+    if (paragraphs[i].startsWith("<figure")) {
       paragraphs.splice(i, 1);
     }
-    paragraphs[i] = paragraphs[i].replaceAll(/<[^>]*>&nbsp;/g, "");
-    paragraphs[i] = paragraphs[i].replaceAll(/&#8217;/g, "’");
+    if (
+      !paragraphs[i].startsWith("<p><img") &&
+      !paragraphs[i].startsWith("<p><iframe") &&
+      !paragraphs[i].startsWith("<p><b")
+    ) {
+      paragraphs[i] = paragraphs[i].replaceAll(/<[^>]*>&nbsp;/g, "");
+      paragraphs[i] = paragraphs[i].replaceAll(/<[^>]*>/g, "");
+      paragraphs[i] = paragraphs[i].replaceAll(/&#8217;/g, "’");
+      paragraphs[i] = paragraphs[i].replaceAll(/&#038;|&amp;/g, "&");
+    }
   }
   return paragraphs;
 };
@@ -34,7 +39,7 @@ function fetchSubcategories(input) {
 
   const category = input.toLowerCase();
   const matchingKey = Object.keys(subcategories).find(
-    (key) => key.toLowerCase() === category
+    (key) => key.toLowerCase() === category,
   );
 
   if (!matchingKey) {
@@ -54,7 +59,7 @@ async function FetchArticlesByCategory(categoryInput, pageNumber, limit) {
     category = categories.find((cat) => cat.id === categoryInput);
   } else {
     category = categories.find(
-      (cat) => cat.name.toLowerCase() === categoryInput.toLowerCase()
+      (cat) => cat.name.toLowerCase() === categoryInput.toLowerCase(),
     );
   }
 
@@ -90,7 +95,7 @@ async function FetchArticlesByCategory(categoryInput, pageNumber, limit) {
           image_url: imageUrl,
           reading_time: calculateReadingTime(article.content.rendered),
         };
-      })
+      }),
     );
 
     return articlesFormatted.slice(0, 10);
@@ -128,11 +133,11 @@ async function FetchArticlesByKeyword(keyword, pageNumber = 1, limit = 10) {
           link: article.link,
           content: article.content.rendered.replace(
             /<\/?[^>]+(>|$)|&nbsp;|&#8217;/g,
-            ""
+            "",
           ),
           image_url: imageUrl,
         };
-      })
+      }),
     );
 
     return articlesFormatted;
@@ -155,7 +160,7 @@ async function fetchAuthor(authorId) {
     if (author && author._links) {
       if (author._links["wp:attachment"]) {
         mediaResponse = await fetchImage(
-          author._links["wp:featuredmedia"][0].href.split("/").pop()
+          author._links["wp:featuredmedia"][0].href.split("/").pop(),
         );
 
         profilePhotoUrl = mediaResponse;
@@ -245,7 +250,7 @@ async function fetchArticlesByAuthor(authorId, pageNumber = 1, limit = 5) {
           content: parseArticle(article.content.rendered).join("\n"),
           image_url: imageUrl,
         };
-      })
+      }),
     );
 
     return articlesFormatted;
@@ -258,7 +263,7 @@ async function fetchArticlesByAuthor(authorId, pageNumber = 1, limit = 5) {
 async function fetchImage(mediaId) {
   try {
     const mediaResponse = await axios.get(
-      `https://thehoya.com/wp-json/wp/v2/media/${mediaId}`
+      `https://thehoya.com/wp-json/wp/v2/media/${mediaId}`,
     );
     return (
       mediaResponse.data.source_url ||
@@ -267,17 +272,16 @@ async function fetchImage(mediaId) {
   } catch (error) {
     console.error(
       `Error fetching image for media ID ${mediaId}:`,
-      error.message
+      error.message,
     );
     return "https://thehoya.com/wp-content/uploads/2013/12/The-Hoya-First-Issue-767x1024.jpg";
   }
 }
 
-// should probably be cached in future by earlier req, but this works for now
 async function fetchArticle(id) {
   try {
     const response = await axios.get(
-      `https://thehoya.com/wp-json/wp/v2/posts/${id}?_embed`
+      `https://thehoya.com/wp-json/wp/v2/posts/${id}?_embed`,
     );
     const article = response.data;
     const imageUrl = article.featured_media
@@ -287,7 +291,7 @@ async function fetchArticle(id) {
 
     // handle Features with multiple authors
     const authorNames = await parseAuthorNames(
-      article.class_list.filter((tag) => tag.startsWith("staff_name-"))
+      article.class_list.filter((tag) => tag.startsWith("staff_name-")),
     );
     const reading_time = calculateReadingTime(article.content.rendered);
     return {
@@ -311,7 +315,7 @@ async function fetchArticle(id) {
 async function fetchCrossword() {
   try {
     const response = await axios.get(
-      "https://thehoya.com/wp-json/wp/v2/posts?categories=49982"
+      "https://thehoya.com/wp-json/wp/v2/posts?categories=49982",
     );
     const articles = response.data;
     const article = articles[0];

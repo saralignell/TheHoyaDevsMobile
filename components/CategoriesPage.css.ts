@@ -1,11 +1,12 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Appearance } from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");
+const colorScheme = Appearance.getColorScheme();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
   },
   maincontainer: {
     flex: 1,
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#000",
     borderRadius: 5,
-    backgroundColor: "#d4d4d4",
+    backgroundColor: colorScheme === "dark" ? "#333" : "#d4d4d4",
     marginHorizontal: 8,
   },
   buttonText: {
@@ -39,36 +40,38 @@ const styles = StyleSheet.create({
   subarticlecontainer: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
     marginBottom: 20,
   },
   subarticle: {
     marginBottom: 15,
-    height: 475,
   },
   subarticleTitle: {
     fontSize: 30,
     fontWeight: "bold",
     marginBottom: 10,
     fontFamily: "SourceSerifPro_600SemiBold",
+    color: colorScheme === "dark" ? "#fff" : "#000",
   },
   horizontalScroll: {
     flexDirection: "row",
+    alignSelf: "flex-start",
   },
   verticalArticleCard: {
     marginBottom: 15,
     padding: 10,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colorScheme === "dark" ? "#333" : "#f9f9f9",
     borderWidth: 1,
     borderColor: "#ddd",
   },
   articleCard: {
     width: screenWidth * 0.7,
+    alignSelf: "flex-start",
     marginRight: 10,
     padding: 10,
     borderRadius: 8,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
     borderWidth: 1,
     borderColor: "#ddd",
     shadowColor: "#000",
@@ -86,25 +89,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: screenWidth * 0.05,
     fontWeight: "bold",
-    color: "black",
+    color: colorScheme === "dark" ? "#fff" : "#000",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_600SemiBold",
   },
   date: {
     fontSize: screenWidth * 0.035,
-    color: "#777",
+    color: colorScheme === "dark" ? "#ccc" : "#777",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_300Light",
   },
   author: {
     fontSize: screenWidth * 0.035,
     fontStyle: "italic",
-    color: "#555",
+    color: colorScheme === "dark" ? "#ccc" : "#555",
     marginBottom: 5,
   },
   preview: {
     fontSize: screenWidth * 0.04,
-    color: "#333",
+    color: colorScheme === "dark" ? "#ccc" : "#333",
     fontFamily: "SourceSerifPro_400Regular",
   },
   loading: {

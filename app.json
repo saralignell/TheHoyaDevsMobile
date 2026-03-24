@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "fit",
       "backgroundColor": "#034da2"
     },
     "ios": {
@@ -20,9 +20,7 @@
         "aps-environment": "production"
       },
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ],
+        "UIBackgroundModes": ["remote-notification"],
         "NSSupportsLiveActivities": true
       },
       "appleTeamId": "66JX3388MN"

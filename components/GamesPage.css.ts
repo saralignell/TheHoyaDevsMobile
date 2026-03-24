@@ -1,15 +1,16 @@
-import { StyleSheet } from "react-native";
+import { Appearance, StyleSheet } from "react-native";
+const colorScheme = Appearance.getColorScheme();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
   },
   gamesList: {
     padding: 20,
   },
   gameCard: {
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
     borderRadius: 8,
     marginBottom: 15,
     borderWidth: 2,
@@ -62,6 +63,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     fontFamily: "SourceSerifPro_600SemiBold",
+    color: colorScheme === "dark" ? "#fff" : "#333",
   },
   timeSection: {
     flexDirection: "column",
@@ -71,16 +73,18 @@ const styles = StyleSheet.create({
   gameTime: {
     fontSize: 16,
     fontFamily: "SourceSerifPro_600SemiBold",
+    color: colorScheme === "dark" ? "#fff" : "#333",
   },
   gameLocation: {
     fontSize: 14,
     fontFamily: "SourceSerifPro_400Regular",
+    color: colorScheme === "dark" ? "#fff" : "#333",
   },
   extraInfo: {
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#ccc",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colorScheme === "dark" ? "#f9f9f9" : "#007140",
   },
   fullWidthCenter: {
     width: "100%",

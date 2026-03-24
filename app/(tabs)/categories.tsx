@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { FetchArticlesByCategory } from "../../helpers/loadArticles";
 import styles from "../../components/CategoriesPage.css";
@@ -15,7 +15,7 @@ interface Article {
 
 export default function CategoriesPage() {
   const [data, setData] = useState<{ [key: string]: Article[] }>({});
-  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const inFlightBySubcategory = useRef<{ [key: string]: boolean }>({});
   const router = useRouter();
 
   const subcategories = [
@@ -33,23 +33,39 @@ export default function CategoriesPage() {
   const fetchData = async (
     subcategory: string,
     pageNumber: number,
-    limit: number
+    limit: number,
   ) => {
-    if (loading[subcategory]) return; // Prevent concurrent fetches for the same subcategory
+    if (inFlightBySubcategory.current[subcategory]) return;
 
-    setLoading((prevLoading) => ({ ...prevLoading, [subcategory]: true }));
+    inFlightBySubcategory.current[subcategory] = true;
+    try {
+      const newArticles = await FetchArticlesByCategory(
+        subcategory,
+        pageNumber,
+        limit,
+      );
 
-    const newArticles = await FetchArticlesByCategory(
-      subcategory,
-      pageNumber,
-      limit
-    );
-    setData((prevData) => ({
-      ...prevData,
-      [subcategory]: [...(prevData[subcategory] || []), ...newArticles],
-    }));
+      if (!newArticles?.length) return;
 
-    setLoading((prevLoading) => ({ ...prevLoading, [subcategory]: false }));
+      setData((prevData) => {
+        const existing = prevData[subcategory] || [];
+        const seen = new Set(existing.map((article) => article.id));
+        const dedupedIncoming = newArticles.filter((article) => {
+          if (seen.has(article.id)) return false;
+          seen.add(article.id);
+          return true;
+        });
+
+        if (!dedupedIncoming.length) return prevData;
+
+        return {
+          ...prevData,
+          [subcategory]: [...existing, ...dedupedIncoming],
+        };
+      });
+    } finally {
+      inFlightBySubcategory.current[subcategory] = false;
+    }
   };
 
   useEffect(() => {
@@ -63,7 +79,7 @@ export default function CategoriesPage() {
       const articlesPromises = subcategories
         .slice(0, 3)
         .map((subcategory) =>
-          fetchData(subcategory, initialPage, initialLimit)
+          fetchData(subcategory, initialPage, initialLimit),
         );
 
       await Promise.all(articlesPromises);
@@ -78,7 +94,7 @@ export default function CategoriesPage() {
         const articlesPromises = subcategories
           .slice(3)
           .map((subcategory) =>
-            fetchData(subcategory, initialPage, initialLimit)
+            fetchData(subcategory, initialPage, initialLimit),
           );
 
         await Promise.all(articlesPromises);
@@ -104,7 +120,7 @@ export default function CategoriesPage() {
             >
               {data[subcategory]?.map((article) => (
                 <TouchableOpacity
-                  key={article.id + Math.random()}
+                  key={`${subcategory}-${article.id}`}
                   style={styles.articleCard}
                   onPress={() => router.push(`/articles/${article.id}`)}
                 >

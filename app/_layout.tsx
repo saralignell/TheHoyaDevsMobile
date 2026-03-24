@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Appearance } from "react-native";
 import { requestNotificationPermission } from "../helpers/notifications";
 import {
   useFonts,
@@ -16,10 +16,7 @@ import { Stack } from "expo-router";
 import messaging from "@react-native-firebase/messaging";
 
 SplashScreen.preventAutoHideAsync();
-
-const linking = {
-  prefixes: [Linking.createURL("/")],
-};
+let colorScheme = Appearance.getColorScheme();
 
 function handleNotificationOpen(remoteMessage: any): string | undefined {
   if (remoteMessage && remoteMessage.data && remoteMessage.data.articleId) {
@@ -61,7 +58,7 @@ export default function RootLayout() {
         if (remoteMessage) {
           console.log(
             "Notification caused app to open from quit state:",
-            remoteMessage
+            remoteMessage,
           );
           const url = handleNotificationOpen(remoteMessage);
           if (url) {
@@ -74,7 +71,7 @@ export default function RootLayout() {
     const unsubscribe = messaging().onNotificationOpenedApp((remoteMessage) => {
       console.log(
         "Notification caused app to open from background state:",
-        remoteMessage
+        remoteMessage,
       );
       const url = handleNotificationOpen(remoteMessage);
       if (url) {
@@ -107,7 +104,6 @@ export default function RootLayout() {
         console.log("Notification permission denied", err);
       }
     };
-
     requestPermissions();
   }, []);
 
@@ -150,7 +146,7 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
     width: "100%",
     height: "100%",
   },

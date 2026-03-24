@@ -1,11 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { StyleSheet, useColorScheme, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { fetchCrossword } from "../../helpers/loadArticles";
 
 export default function CrosswordPage() {
   const [crossword, setCrossword] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+
+  const injectedThemeScript = useMemo(
+    () => `
+      (function () {
+        var isDark = ${isDark ? "true" : "false"};
+        var root = document.documentElement;
+        var body = document.body;
+
+        if (root) {
+          root.classList.toggle('dark-mode', isDark);
+          root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        }
+
+        if (body) {
+          body.classList.toggle('dark-mode', isDark);
+          body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        }
+      })();
+      true;
+    `,
+    [isDark],
+  );
 
   useEffect(() => {
     const loadCrossword = async () => {
@@ -28,21 +52,35 @@ export default function CrosswordPage() {
   }
 
   return (
-    <WebView
-      source={{
-        uri:
-          "https://puzzleme.amuselabs.com/pmm/crossword?&set=" +
-          crossword +
-          "&embed=wp&id=" +
-          id,
-      }}
-    />
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDark ? "#000714" : "#fff" },
+      ]}
+    >
+      <WebView
+        key={isDark ? "dark" : "light"}
+        source={{
+          uri:
+            "https://puzzleme.amuselabs.com/pmm/crossword?&set=" +
+            crossword +
+            "&embed=wp&id=" +
+            id,
+        }}
+        style={styles.webview}
+        injectedJavaScriptBeforeContentLoaded={injectedThemeScript}
+        injectedJavaScript={injectedThemeScript}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+  },
+  webview: {
+    flex: 1,
+    backgroundColor: "transparent",
   },
 });

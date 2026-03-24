@@ -4,17 +4,19 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Share,
   ActivityIndicator,
   FlatList,
   Linking,
   RefreshControl,
+  Appearance,
 } from "react-native";
 import { fetchGames } from "../../helpers/loadArticles";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../../components/GamesPage.css";
 import { Ionicons } from "@expo/vector-icons";
 import { SvgUri } from "react-native-svg";
+
+const colorScheme = Appearance.getColorScheme();
 
 export default function GamesPage() {
   const [games, setGames] = useState<any[]>([]);
@@ -72,6 +74,8 @@ export default function GamesPage() {
   const parseGameTime = (timeString: string) => {
     if (!timeString) return "TBD";
     if (timeString.toLowerCase() === "tbd") return "TBD";
+    if (timeString.toLowerCase() === "all day") return "All Day";
+    if (timeString.toLowerCase() === "noon") return "Noon";
 
     let fixedTimeString = timeString.replaceAll(".", "").toUpperCase();
     if (fixedTimeString.indexOf(":") === -1) {
@@ -130,10 +134,18 @@ export default function GamesPage() {
               {parseGameTime(item.time)}
             </Text>
             {item.location_indicator == "H" ? (
-              <Ionicons name="home" size={20} color="#034da2" />
+              <Ionicons
+                name="home"
+                size={20}
+                color={colorScheme === "dark" ? "#005ac1" : "#034da2"}
+              />
             ) : item.location_indicator == "N" ||
               item.location_indicator == "A" ? (
-              <Ionicons name="home-outline" size={20} color="#555" />
+              <Ionicons
+                name="home-outline"
+                size={20}
+                color={colorScheme === "dark" ? "#fff" : "#333"}
+              />
             ) : null}
           </View>
           <View style={styles.teamInfo}>
@@ -145,7 +157,9 @@ export default function GamesPage() {
                   style={styles.teamLogo}
                 />
               )}
-            <Text style={styles.teamName}>{item.opponent.name}</Text>
+            <Text style={styles.teamName} numberOfLines={2}>
+              {item.opponent.name}
+            </Text>
             {item.result.status !== null &&
               (item.result.team_score !== null ||
                 item.result.opponent_score !== null) && (

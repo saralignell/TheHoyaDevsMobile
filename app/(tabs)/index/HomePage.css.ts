@@ -1,9 +1,11 @@
-import { StyleSheet, Platform, Dimensions } from "react-native";
+import { StyleSheet, Appearance, Dimensions } from "react-native";
+
+let colorScheme = Appearance.getColorScheme();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
   },
   loading: {
     flex: 1,
@@ -22,7 +24,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 20,
     paddingVertical: 5,
-    backgroundColor: "white",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
   },
   image: {
     width: "100%",
@@ -34,25 +36,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "black",
+    color: colorScheme === "dark" ? "#fff" : "#000",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_600SemiBold",
   },
   date: {
     fontSize: 14,
-    color: "#777",
+    color: colorScheme === "dark" ? "#ccc" : "#777",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_300Light",
   },
   author: {
     fontSize: 14,
     fontStyle: "italic",
-    color: "#555",
+    color: colorScheme === "dark" ? "#ccc" : "#555",
     marginBottom: 5,
   },
   preview: {
     fontSize: 16,
-    color: "#333",
+    color: colorScheme === "dark" ? "#aaa" : "#333",
     fontFamily: "SourceSerifPro_400Regular",
   },
   headline: {
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -10 }],
     height: 250,
     marginBottom: 20,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#f5f5f5",
   },
   headlineTitle: {
     fontSize: 26,
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
   },
   hr: {
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: colorScheme === "dark" ? "#333" : "#ddd",
     marginVertical: 20,
     width: "90%",
     alignSelf: "center",
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     padding: 15,
     gap: 10,
     borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    borderTopColor: colorScheme === "dark" ? "#333" : "#ddd",
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontFamily: "SourceSerifPro_400Regular",
-    color: "#034da2",
+    color: colorScheme === "dark" ? "#005ac1" : "#034da2",
   },
 });
 

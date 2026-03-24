@@ -13,12 +13,13 @@ import {
   Dimensions,
   Appearance,
 } from "react-native";
+import { WebView } from "react-native-webview";
 import { fetchArticle } from "../../helpers/loadArticles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { HeaderContext } from "../_layout";
 
-interface Article {
+type Article = {
   id: number;
   title: string;
   date: string;
@@ -28,7 +29,7 @@ interface Article {
   link?: string;
   content: string[];
   isFeature?: boolean;
-}
+};
 
 let ScreenHeight = Dimensions.get("window").height;
 let colorScheme = Appearance.getColorScheme();
@@ -75,11 +76,12 @@ export default function ArticlePage() {
     const fetchArticleData = async () => {
       try {
         const fetchedData = await fetchArticle(id);
+        console.log("Raw fetched data:", fetchedData);
         const article: Article = {
           id: fetchedData.id,
           title: fetchedData.title,
           date: fetchedData.date,
-          content: parseArticle(fetchedData.content),
+          content: fetchedData.content.split("\n"),
           image_url: fetchedData.image_url,
           link: fetchedData.link,
           author: fetchedData.author,
@@ -102,21 +104,6 @@ export default function ArticlePage() {
       isMounted = false;
     };
   }, [params.articleId]);
-
-  const parseArticle = (content: string) => {
-    const paragraphs = content.split("\n");
-    for (let i = 0; i < paragraphs.length; i++) {
-      //removes inline figures or ratings from the guide
-      if (
-        paragraphs[i].startsWith("<figure") ||
-        paragraphs[i].startsWith("<p><img")
-      ) {
-        paragraphs.splice(i, 1);
-      }
-      paragraphs[i] = paragraphs[i].replace(/<[^>]*>/g, "");
-    }
-    return paragraphs;
-  };
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
@@ -200,11 +187,31 @@ export default function ArticlePage() {
               />
             </View>
           </View>
-          {article.content.map((paragraph, index) => (
-            <Text key={index} style={styles.content}>
-              {paragraph}
-            </Text>
-          ))}
+          {article.content.map((paragraph, index) =>
+            paragraph.startsWith("<p><img") ? (
+              <View key={index} style={[styles.inlineImage]}>
+                <Image
+                  source={{ uri: paragraph.match(/src="([^"]+)"/)?.[1] || "" }}
+                  style={styles.inlineImage}
+                />
+              </View>
+            ) : paragraph.startsWith("<p><iframe") ? (
+              <View key={index} style={{ height: 200, marginVertical: 10 }}>
+                <WebView
+                  source={{ uri: paragraph.match(/src="([^"]+)"/)?.[1] || "" }}
+                  style={{ flex: 1 }}
+                />
+              </View>
+            ) : paragraph.startsWith("<p><b") ? (
+              <Text key={index} style={[styles.content, styles.boldSubtitle]}>
+                {paragraph.replace(/<[^>]*>/g, "")}
+              </Text>
+            ) : (
+              <Text key={index} style={styles.content}>
+                {paragraph}
+              </Text>
+            ),
+          )}
         </ScrollView>
       )}
       {article && article.isFeature && (
@@ -238,11 +245,31 @@ export default function ArticlePage() {
               />
             </View>
           </ImageBackground>
-          {article.content.map((paragraph, index) => (
-            <Text key={index} style={styles.content}>
-              {paragraph}
-            </Text>
-          ))}
+          {article.content.map((paragraph, index) =>
+            paragraph.startsWith("<p><img") ? (
+              <View key={index} style={[styles.inlineImage]}>
+                <Image
+                  source={{ uri: paragraph.match(/src="([^"]+)"/)?.[1] || "" }}
+                  style={styles.inlineImage}
+                />
+              </View>
+            ) : paragraph.startsWith("<p><iframe") ? (
+              <View key={index} style={{ height: 200, marginVertical: 10 }}>
+                <WebView
+                  source={{ uri: paragraph.match(/src="([^"]+)"/)?.[1] || "" }}
+                  style={{ flex: 1 }}
+                />
+              </View>
+            ) : paragraph.startsWith("<p><b") ? (
+              <Text key={index} style={[styles.content, styles.boldSubtitle]}>
+                {paragraph.replace(/<[^>]*>/g, "")}
+              </Text>
+            ) : (
+              <Text key={index} style={styles.content}>
+                {paragraph}
+              </Text>
+            ),
+          )}
         </ScrollView>
       )}
       <View
@@ -262,7 +289,7 @@ export default function ArticlePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colorScheme === "dark" ? "#000" : "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
   },
   content: {
     fontSize: 18,
@@ -361,5 +388,18 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginTop: 15,
     marginBottom: 15,
+  },
+  boldSubtitle: {
+    fontWeight: "bold",
+    marginBottom: -5,
+    fontFamily: "SourceSerifPro_600SemiBold",
+    fontSize: 20,
+  },
+  inlineImage: {
+    width: "85%",
+    height: 85,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: -5,
   },
 });

@@ -1,6 +1,9 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Appearance } from "react-native";
+
+let colorScheme = Appearance.getColorScheme();
 
 export default function TabLayout() {
   return (
@@ -9,6 +12,9 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: "#1E90FF",
         tabBarInactiveTintColor: "gray",
+        tabBarStyle: {
+          backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
+        },
       }}
     >
       <Tabs.Screen

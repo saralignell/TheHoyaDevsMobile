@@ -9,6 +9,7 @@ import {
   Linking,
   ScrollView,
   RefreshControl,
+  Appearance,
 } from "react-native";
 import { FetchArticlesByCategory } from "../../../helpers/loadArticles";
 import styles from "./HomePage.css";
@@ -25,6 +26,8 @@ interface Article {
   content?: string;
   reading_time?: number;
 }
+
+const colorScheme = Appearance.getColorScheme();
 
 export default function Index() {
   const { setIsReady } = useLocalSearchParams();
@@ -161,14 +164,18 @@ export default function Index() {
               <View style={styles.footerContainer}>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://thehoya.com/privacy-policy/")
+                    Linking.openURL(
+                      "https://thehoya.com/privacy-policy-the-hoya-app/",
+                    )
                   }
                 >
                   <Text style={styles.footerText}>Privacy Policy</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
-                    Linking.openURL("https://thehoya.com/privacy-policy/")
+                    Linking.openURL(
+                      "https://thehoya.com/terms-conditions-the-hoya-app/",
+                    )
                   }
                 >
                   <Text style={styles.footerText}>Terms of Service</Text>
@@ -204,14 +211,25 @@ export default function Index() {
                   source={{ uri: item.image_url }}
                   style={styles.headlineImage}
                 >
-                  <LinearGradient
-                    colors={[
-                      "transparent",
-                      "rgba(255, 255, 255, 0.5)",
-                      "rgba(255, 255, 255, 1)",
-                    ]}
-                    style={{ height: "100%", width: "100%" }}
-                  />
+                  {colorScheme === "dark" ? (
+                    <LinearGradient
+                      colors={[
+                        "transparent",
+                        "rgba(0, 7, 20, 0.5)",
+                        "rgba(0, 7, 20, 1)",
+                      ]}
+                      style={{ height: "100%", width: "100%" }}
+                    />
+                  ) : (
+                    <LinearGradient
+                      colors={[
+                        "transparent",
+                        "rgba(255, 255, 255, 0.5)",
+                        "rgba(255, 255, 255, 1)",
+                      ]}
+                      style={{ height: "100%", width: "100%" }}
+                    />
+                  )}
                   <Text style={[styles.title, styles.headlineTitle]}>
                     {item.title || "Untitled"}
                   </Text>
@@ -235,7 +253,7 @@ export default function Index() {
                 style={[styles.preview, styles.headlinePreview]}
               >
                 {item.content
-                  ? item.content.replace(/<[^>]+>/g, "")
+                  ? item.content.replace(/<[^>]+>/g, "").replace(/\n/g, " ")
                   : "No content available."}
               </Text>
               <View style={styles.hr} />
