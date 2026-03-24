@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
-    marginBottom: 20,
   },
   subarticle: {
     marginBottom: 15,
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
   horizontalScroll: {
     flexDirection: "row",
     alignSelf: "flex-start",
+    minHeight: 300,
   },
   verticalArticleCard: {
     marginBottom: 15,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: "#ddd",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },

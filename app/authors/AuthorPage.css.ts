@@ -1,9 +1,11 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Appearance } from "react-native";
+
+const colorScheme = Appearance.getColorScheme();
 
 const styles = StyleSheet.create({
   container: {
     flex: 0,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
     padding: 20,
     alignItems: "center",
     paddingBottom: 20,
@@ -13,6 +15,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    color: colorScheme === "dark" ? "#fff" : "#000",
     fontFamily: "SourceSerifPro_600SemiBold",
   },
   photoContainer: {
@@ -32,7 +35,7 @@ const styles = StyleSheet.create({
   },
   bio: {
     fontSize: 16,
-    color: "#333",
+    color: colorScheme === "dark" ? "#ccc" : "#333",
     lineHeight: 22,
     fontFamily: "SourceSerifPro_400Regular",
     textAlign: "center",
@@ -41,7 +44,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: 360,
     paddingVertical: 5,
-    backgroundColor: "white",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "white",
   },
   image: {
     width: "100%",
@@ -53,25 +56,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "black",
+    color: colorScheme === "dark" ? "#fff" : "#000",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_600SemiBold",
   },
   date: {
     fontSize: 14,
-    color: "#777",
+    color: colorScheme === "dark" ? "#ccc" : "#777",
     marginBottom: 5,
     fontFamily: "SourceSerifPro_300Light",
   },
   author: {
     fontSize: 14,
     fontStyle: "italic",
-    color: "#555",
+    color: colorScheme === "dark" ? "#ccc" : "#555",
     marginBottom: 5,
   },
   preview: {
     fontSize: 16,
-    color: "#333",
+    color: colorScheme === "dark" ? "#ccc" : "#333",
     fontFamily: "SourceSerifPro_400Regular",
   },
 });

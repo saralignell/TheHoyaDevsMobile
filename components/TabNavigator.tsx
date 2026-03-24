@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 90, // Standard height for a news app header
+    height: 90,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center", // Center logo

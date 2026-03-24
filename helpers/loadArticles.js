@@ -2,10 +2,25 @@ import axios from "axios";
 import categories from "./categories.js";
 import { subcategories } from "./categories.js";
 
+const specialCharacterMap = {
+  "&nbsp;": " ",
+  "&#8217;": "’",
+  "&#038;": "&",
+  "&amp;": "&",
+  "&#8212;": "—",
+  "&#8211;": "–",
+  "&#8220;": "“",
+  "&#8221;": "”",
+  "\n\n": "\n",
+  "&lt;": "<",
+  "&gt;": ">",
+};
+
 const parseArticle = (content) => {
+  // remove leading and trailing newlines
+  content = content.replace(/^\n+|\n+$/g, "");
   const paragraphs = content.split("\n");
   for (let i = 0; i < paragraphs.length; i++) {
-    //removes inline figures or ratings from the guide
     if (paragraphs[i].startsWith("<figure")) {
       paragraphs.splice(i, 1);
     }
@@ -16,8 +31,10 @@ const parseArticle = (content) => {
     ) {
       paragraphs[i] = paragraphs[i].replaceAll(/<[^>]*>&nbsp;/g, "");
       paragraphs[i] = paragraphs[i].replaceAll(/<[^>]*>/g, "");
-      paragraphs[i] = paragraphs[i].replaceAll(/&#8217;/g, "’");
-      paragraphs[i] = paragraphs[i].replaceAll(/&#038;|&amp;/g, "&");
+      // Run through the special character map and replace all occurrences in the paragraph
+      for (const [key, value] of Object.entries(specialCharacterMap)) {
+        paragraphs[i] = paragraphs[i].replaceAll(key, value);
+      }
     }
   }
   return paragraphs;
@@ -89,7 +106,7 @@ async function FetchArticlesByCategory(categoryInput, pageNumber, limit) {
         return {
           id: article.id,
           date: article.date,
-          title: article.title.rendered.replace(/&nbsp;|&#8217;/g, ""),
+          title: parseArticle(article.title.rendered)[0],
           link: article.link,
           content: parseArticle(article.content.rendered).join("\n"),
           image_url: imageUrl,
@@ -129,12 +146,9 @@ async function FetchArticlesByKeyword(keyword, pageNumber = 1, limit = 10) {
         return {
           id: article.id,
           date: article.date,
-          title: article.title.rendered,
+          title: parseArticle(article.title.rendered)[0],
           link: article.link,
-          content: article.content.rendered.replace(
-            /<\/?[^>]+(>|$)|&nbsp;|&#8217;/g,
-            "",
-          ),
+          content: parseArticle(article.content.rendered).join("\n"),
           image_url: imageUrl,
         };
       }),

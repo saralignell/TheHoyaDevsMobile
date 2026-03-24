@@ -4,13 +4,15 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Share,
+  Appearance,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
 import { fetchArticlesByAuthor, fetchAuthor } from "../../helpers/loadArticles";
 import styles from "./AuthorPage.css";
 import { useRouter, useLocalSearchParams } from "expo-router";
+
+const colorScheme = Appearance.getColorScheme();
 
 interface Author {
   id: number;
@@ -49,7 +51,7 @@ export default function AuthorPage() {
         const articlesData = await fetchArticlesByAuthor(author);
         console.log(
           `Fetched ${articlesData.length} articles for author ID:`,
-          author
+          author,
         );
         setArticles(articlesData);
       } catch (err) {
@@ -72,7 +74,9 @@ export default function AuthorPage() {
 
   if (authorData) {
     return (
-      <View style={{ backgroundColor: "#fff" }}>
+      <View
+        style={{ backgroundColor: colorScheme === "dark" ? "#000714" : "#fff" }}
+      >
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.photoContainer}>
             <Image

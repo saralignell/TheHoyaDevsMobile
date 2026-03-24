@@ -8,10 +8,13 @@ import {
   FlatList,
   Image,
   ActivityIndicator,
+  Appearance,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Icon library
 import axios from "axios";
 import { useRouter } from "expo-router";
+
+const colorScheme = Appearance.getColorScheme();
 
 // Define the article type
 interface Article {
@@ -126,7 +129,7 @@ const Searchpage = () => {
 async function FetchArticlesByKeyword(
   keyword: string,
   pageNumber = 1,
-  limit = 10
+  limit = 10,
 ): Promise<Article[]> {
   const apiUrl = "https://thehoya.com/wp-json/wp/v2/posts";
 
@@ -151,7 +154,7 @@ async function FetchArticlesByKeyword(
           content: article.content.rendered.replace(/<\/?[^>]+(>|$)/g, ""),
           image_url: imageUrl,
         };
-      })
+      }),
     );
 
     return articlesFormatted;
@@ -169,18 +172,18 @@ async function FetchArticlesByKeyword(
 async function fetchImage(mediaId: number): Promise<string> {
   try {
     const mediaResponse = await axios.get(
-      `https://thehoya.com/wp-json/wp/v2/media/${mediaId}`
+      `https://thehoya.com/wp-json/wp/v2/media/${mediaId}`,
     );
     return mediaResponse.data.source_url || "";
   } catch (error) {
     if (error instanceof Error) {
       console.error(
         `Error fetching image for media ID ${mediaId}:`,
-        error.message
+        error.message,
       );
     } else {
       console.error(
-        `Unknown error occurred while fetching image for media ID ${mediaId}.`
+        `Unknown error occurred while fetching image for media ID ${mediaId}.`,
       );
     }
     return "";
@@ -191,7 +194,7 @@ async function fetchImage(mediaId: number): Promise<string> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colorScheme === "dark" ? "#000714" : "#fff",
   },
   searchBarContainer: {
     flexDirection: "row",
@@ -207,9 +210,9 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     borderRadius: 10, // Increased border radius for rounder appearance
-    backgroundColor: "#f0f0f0",
+    backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
     paddingHorizontal: 10,
-    color: "#333",
+    color: colorScheme === "dark" ? "#fff" : "#333",
     fontFamily: "SourceSansPro_400Regular",
   },
   clearIcon: {
@@ -232,12 +235,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "#333",
+    color: colorScheme === "dark" ? "#fff" : "#333",
     fontFamily: "SourceSansPro_600SemiBold",
   },
   articleContent: {
     fontSize: 14,
-    color: "#666",
+    color: colorScheme === "dark" ? "#ccc" : "#666",
     fontFamily: "SourceSansPro_400Regular",
   },
   articleImage: {
