@@ -193,15 +193,23 @@ export default function GamesPage() {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={games}
-        renderItem={renderGameItem}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
-        }
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.gamesList}
-      />
+      {games.length > 0 ? (
+        <FlatList
+          data={games}
+          renderItem={renderGameItem}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+          }
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.gamesList}
+        />
+      ) : (
+        <ActivityIndicator
+          color={colorScheme === "dark" ? "#005ac1" : "#034da2"}
+          size={"large"}
+          style={styles.loading}
+        />
+      )}
     </View>
   );
 }

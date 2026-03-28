@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   loading: {
     textAlign: "center",
-    marginTop: 20,
+    marginVertical: 40,
     fontSize: 18,
   },
 });

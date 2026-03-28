@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+  Appearance,
+} from "react-native";
 import { FetchArticlesByCategory } from "../../helpers/loadArticles";
 import styles from "../../components/CategoriesPage.css";
 import { useRouter } from "expo-router";
@@ -17,6 +25,7 @@ export default function CategoriesPage() {
   const [data, setData] = useState<{ [key: string]: Article[] }>({});
   const inFlightBySubcategory = useRef<{ [key: string]: boolean }>({});
   const router = useRouter();
+  const colorScheme = Appearance.getColorScheme();
 
   const subcategories = [
     "Student-Life",
@@ -112,43 +121,51 @@ export default function CategoriesPage() {
         {subcategories.map((subcategory) => (
           <View key={subcategory} style={styles.subarticle}>
             <Text style={styles.subarticleTitle}>{subcategory}</Text>
-            <ScrollView
-              horizontal
-              scrollEventThrottle={16}
-              contentContainerStyle={styles.horizontalScroll}
-              showsHorizontalScrollIndicator={false}
-            >
-              {data[subcategory]?.map((article) => (
-                <TouchableOpacity
-                  key={`${subcategory}-${article.id}`}
-                  style={styles.articleCard}
-                  onPress={() => router.push(`/articles/${article.id}`)}
-                >
-                  {article.image_url && (
-                    <Image
-                      source={{ uri: article.image_url }}
-                      style={styles.image}
-                    />
-                  )}
-                  <Text style={styles.title}>
-                    {article.title || "Untitled"}
-                  </Text>
-                  <Text style={styles.date}>
-                    {article.date
-                      ? new Date(article.date).toDateString()
-                      : "No date available"}
-                  </Text>
-                  {article.author && (
-                    <Text style={styles.author}>By: {article.author}</Text>
-                  )}
-                  <Text numberOfLines={3} style={styles.preview}>
-                    {article.content
-                      ? article.content.replace(/<[^>]+>/g, "") // Remove HTML tags
-                      : "No content available."}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            {data[subcategory] ? (
+              <ScrollView
+                horizontal
+                scrollEventThrottle={16}
+                contentContainerStyle={styles.horizontalScroll}
+                showsHorizontalScrollIndicator={false}
+              >
+                {data[subcategory]?.map((article) => (
+                  <TouchableOpacity
+                    key={`${subcategory}-${article.id}`}
+                    style={styles.articleCard}
+                    onPress={() => router.push(`/articles/${article.id}`)}
+                  >
+                    {article.image_url && (
+                      <Image
+                        source={{ uri: article.image_url }}
+                        style={styles.image}
+                      />
+                    )}
+                    <Text style={styles.title}>
+                      {article.title || "Untitled"}
+                    </Text>
+                    <Text style={styles.date}>
+                      {article.date
+                        ? new Date(article.date).toDateString()
+                        : "No date available"}
+                    </Text>
+                    {article.author && (
+                      <Text style={styles.author}>By: {article.author}</Text>
+                    )}
+                    <Text numberOfLines={3} style={styles.preview}>
+                      {article.content
+                        ? article.content.replace(/<[^>]+>/g, "") // Remove HTML tags
+                        : "No content available."}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            ) : (
+              <ActivityIndicator
+                color={colorScheme === "dark" ? "#005ac1" : "#034da2"}
+                size={"large"}
+                style={styles.loading}
+              />
+            )}
           </View>
         ))}
       </ScrollView>

@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { StyleSheet, useColorScheme, View } from "react-native";
+import {
+  StyleSheet,
+  useColorScheme,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import { fetchCrossword } from "../../helpers/loadArticles";
 
@@ -48,7 +53,20 @@ export default function CrosswordPage() {
   }, []);
 
   if (!crossword || !id) {
-    return null;
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isDark ? "#000714" : "#fff" },
+        ]}
+      >
+        <ActivityIndicator
+          color={colorScheme === "dark" ? "#005ac1" : "#034da2"}
+          size={"large"}
+          style={styles.loading}
+        />
+      </View>
+    );
   }
 
   return (
@@ -82,5 +100,11 @@ const styles = StyleSheet.create({
   webview: {
     flex: 1,
     backgroundColor: "transparent",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 18,
   },
 });
