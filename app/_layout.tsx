@@ -83,7 +83,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      console.log("Fonts and app are ready");
       setIsSplashReady(true);
       setTimeout(() => {
         SplashScreen.hideAsync();
@@ -99,7 +98,6 @@ export default function RootLayout() {
     const requestPermissions = async () => {
       try {
         await requestNotificationPermission();
-        console.log("Notification permission granted");
       } catch (err) {
         console.log("Notification permission denied", err);
       }
@@ -126,7 +124,7 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            fullScreenGestureEnabled: true,
+            fullScreenGestureEnabled: false,
             headerTransparent: true,
           }}
         >

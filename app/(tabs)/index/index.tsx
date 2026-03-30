@@ -65,7 +65,6 @@ export default function Index() {
     try {
       const articles = await FetchArticlesByCategory("News - Top", 1);
       setNews(articles || []);
-      console.log("Featured news loaded");
     } catch (err) {
       console.error("Error fetching featured news:", err);
       if (isFirstMount) setError("Failed to fetch featured news.");
@@ -73,7 +72,6 @@ export default function Index() {
       setLoading(false);
       // set a 2 second delay before marking the app as ready
       setTimeout(() => {
-        console.log("App is ready");
         //setIsReady(true);
       }, 2000);
     }
@@ -204,7 +202,6 @@ export default function Index() {
               <TouchableOpacity
                 style={styles.headline}
                 onPress={() => {
-                  console.log("Navigating to article", item.id);
                   router.push(`/articles/${item.id}`);
                 }}
               >

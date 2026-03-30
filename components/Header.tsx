@@ -19,7 +19,7 @@ const Header = ({ onArticlePage }: HeaderProps) => {
     <View
       style={contextOnFeaturedPage ? styles.featurePageHeader : styles.header}
     >
-      <Pressable onPress={() => router.navigate("/")}>
+      <Pressable>
         {contextOnArticlePage && (
           <Ionicons
             name="arrow-back"
@@ -62,13 +62,14 @@ const styles = StyleSheet.create({
     left: -125,
     paddingRight: 8,
     paddingTop: 10,
+    backgroundColor: "transparent",
   },
   featurePageHeader: {
     height: Platform.OS === "ios" ? 90 : 60, // Standard height for a news app header
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center", // Center logo
-    backgroundColor: "rgba(9, 76, 159, 1)",
+    backgroundColor: "#094c9f",
     paddingHorizontal: 16, // Standard horizontal padding
     paddingBottom: 5,
     paddingTop: Platform.OS === "ios" ? 40 : 0, // Adjust for iOS status bar

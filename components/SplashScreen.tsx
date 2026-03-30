@@ -42,11 +42,11 @@ export default function AnimatedSplashScreen({
     <Animated.View style={[styles.container, { opacity: screenClear }]}>
       <Image
         source={require("../assets/splash.png")}
-        style={{ width: "62%", height: "62%" }}
+        style={{ width: "100%", height: "100%" }}
         resizeMode="contain"
       />
       <Animated.View
-        style={{ opacity: fadeAnim, position: "absolute", bottom: 250 }}
+        style={{ opacity: fadeAnim, position: "absolute", bottom: 200 }}
       >
         <Text
           style={{

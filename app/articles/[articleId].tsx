@@ -76,7 +76,6 @@ export default function ArticlePage() {
     const fetchArticleData = async () => {
       try {
         const fetchedData = await fetchArticle(id);
-        console.log("Raw fetched data:", fetchedData);
         const article: Article = {
           id: fetchedData.id,
           title: fetchedData.title,
@@ -88,7 +87,6 @@ export default function ArticlePage() {
           author_id: fetchedData.author_id,
           isFeature: fetchedData.isFeature,
         };
-        console.log("Fetched article:", article.author_id);
         if (isMounted) setArticle(article);
       } catch (err) {
         console.error("Error fetching article:", err);
@@ -104,6 +102,66 @@ export default function ArticlePage() {
       isMounted = false;
     };
   }, [params.articleId]);
+
+  const renderStars = (url: string): React.ReactNode => {
+    // can be of format n, or n-1_2 for half stars, so we need to handle both cases
+    let match = url.match(/(\d+)-1_(\d)starweb-\d+-\d+\.png/);
+    let wholeStars = 0;
+    let halfStar = 0;
+    if (match) {
+      wholeStars = parseInt(match[1], 10);
+      halfStar = match[2] ? parseInt(match[2], 10) : 0;
+    } else {
+      match = url.match(/(\d+)starweb(?:-\d+-\d+)?\.png/);
+      if (match) {
+        wholeStars = parseInt(match[1], 10);
+      } else {
+        console.warn(`Could not parse star rating from URL: ${url}`);
+        return null;
+      }
+    }
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        {Array.from({ length: wholeStars }, (_, i) => (
+          <Ionicons
+            key={i}
+            name="star"
+            size={40}
+            color={colorScheme === "dark" ? "#005ac1" : "#034ad2"}
+            style={{ marginRight: 10 }}
+          />
+        ))}
+        {halfStar === 2 && (
+          <Ionicons
+            name="star-half"
+            size={40}
+            color={colorScheme === "dark" ? "#005ac1" : "#034ad2"}
+            style={{ marginRight: 10 }}
+          />
+        )}
+        {Array.from(
+          { length: 5 - wholeStars - (halfStar === 2 ? 1 : 0) },
+          (_, i) => (
+            <Ionicons
+              key={i + wholeStars + (halfStar === 2 ? 1 : 0)}
+              name="star-outline"
+              size={40}
+              color={colorScheme === "dark" ? "#005ac1" : "#034ad2"}
+              style={{ marginRight: 10 }}
+            />
+          ),
+        )}
+      </View>
+    );
+  };
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
@@ -190,10 +248,16 @@ export default function ArticlePage() {
           {article.content.map((paragraph, index) =>
             paragraph.startsWith("<p><img") ? (
               <View key={index} style={[styles.inlineImage]}>
-                <Image
-                  source={{ uri: paragraph.match(/src="([^"]+)"/)?.[1] || "" }}
-                  style={styles.inlineImage}
-                />
+                {index === 0 && paragraph.includes("starweb") ? (
+                  renderStars(paragraph.match(/src="([^"]+)"/)?.[1] || "")
+                ) : (
+                  <Image
+                    source={{
+                      uri: paragraph.match(/src="([^"]+)"/)?.[1] || "",
+                    }}
+                    style={styles.inlineImage}
+                  />
+                )}
               </View>
             ) : paragraph.startsWith("<p><iframe") ? (
               <View key={index} style={{ height: 200, marginVertical: 10 }}>
