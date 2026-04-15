@@ -13,6 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons"; // Icon library
 import axios from "axios";
 import { useRouter } from "expo-router";
+import { parseArticle } from "../../helpers/loadArticles";
 
 const colorScheme = Appearance.getColorScheme();
 
@@ -149,9 +150,11 @@ async function FetchArticlesByKeyword(
         return {
           id: article.id,
           date: article.date,
-          title: article.title.rendered,
+          title: parseArticle(article.title.rendered)[0],
           link: article.link,
-          content: article.content.rendered.replace(/<\/?[^>]+(>|$)/g, ""),
+          content: parseArticle(
+            article.content.rendered.replace(/<\/?[^>]+(>|$)/g, ""),
+          ).join("\n"),
           image_url: imageUrl,
         };
       }),

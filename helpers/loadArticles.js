@@ -13,10 +13,45 @@ const specialCharacterMap = {
   "&#8221;": "”",
   "\n\n": "\n",
   "&lt;": "<",
+  "&#062;": ">",
   "&gt;": ">",
+  "&#060;": "<",
+  "&cent;": "¢",
+  "&pound;": "£",
+  "&sect;": "§",
+  "&deg;": "°",
+  "&#176;": "°",
+  "&middot;": "·",
+  "&#183;": "·",
+  "&hellip;": "…",
+  "&#8230;": "…",
+  "&lsquo;": "‘",
+  "&rsquo;": "’",
+  "&ldquo;": "“",
+  "&rdquo;": "”",
+  "&prime;": "′",
+  "&Prime;": "″",
+  "&#8242;": "′",
+  "&#8243;": "″",
+  "&asymp;": "≈",
+  "&#8776;": "≈",
+  "&ne;": "≠",
+  "&#8800;": "≠",
+  "&le;": "≤",
+  "&#8804;": "≤",
+  "&ge;": "≥",
+  "&#8805;": "≥",
+  "&#8211;": "–",
+  "&#8212;": "—",
+  "&#8218;": "‚",
+  "&#8219;": "‛",
+  "&#8220;": "“",
+  "&#8221;": "”",
+  "&#8222;": "„",
+  "&#8223;": "‟",
 };
 
-const parseArticle = (content) => {
+export const parseArticle = (content) => {
   // remove leading and trailing newlines
   content = content.replace(/^\n+|\n+$/g, "");
   const paragraphs = content.split("\n");
@@ -132,11 +167,15 @@ async function FetchArticlesByKeyword(keyword, pageNumber = 1, limit = 10) {
     });
 
     const articles = response.data;
+    console.log("Fetched articles for keyword:", keyword, articles);
 
     // Format the articles
     const articlesFormatted = await Promise.all(
       articles.map(async (article) => {
-        if (article[0].class_list.includes("category-crosswords")) {
+        if (
+          article[0] &&
+          article[0].class_list.includes("category-crosswords")
+        ) {
           return;
         }
         const imageUrl = article.featured_media
@@ -250,6 +289,12 @@ async function fetchArticlesByAuthor(authorId, pageNumber = 1, limit = 5) {
 
     const articles = response.data;
 
+    // debug for article title formatting
+    console.log(
+      "Raw article titles:",
+      articles.map((a) => a.title.rendered),
+    );
+
     const articlesFormatted = await Promise.all(
       articles.map(async (article) => {
         const imageUrl = article.featured_media
@@ -259,12 +304,18 @@ async function fetchArticlesByAuthor(authorId, pageNumber = 1, limit = 5) {
         return {
           id: article.id,
           date: article.date,
-          title: article.title.rendered,
+          title: parseArticle(article.title.rendered).join("\n"),
           link: article.link,
           content: parseArticle(article.content.rendered).join("\n"),
           image_url: imageUrl,
         };
       }),
+    );
+
+    // debug for formatted article titles
+    console.log(
+      "Formatted article titles:",
+      articlesFormatted.map((a) => a.title),
     );
 
     return articlesFormatted;
